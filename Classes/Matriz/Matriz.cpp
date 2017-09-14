@@ -89,8 +89,7 @@ ostream &operator<<(ostream &X, const Matriz &N)
     return X;
 }
 
-istream &operator>>(istream &X, const Matriz &N)
-{
+istream &operator>>(istream &X, const Matriz &N){
     if (N.NL==0 || N.NC==0)
     {
         cerr << "Matriz de dimensao nula\n";

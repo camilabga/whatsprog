@@ -1,0 +1,7 @@
+LISTALIVRO 1
+L: "O Pequeno Príncipe";$38.00;"Saint Exupery"
+LISTACD 2
+C: "Samba Total";$18.15;12
+C: "Bebadosamba";$11.36;15
+LISTADVD 1
+D: "Queen Live";$23.98;127
