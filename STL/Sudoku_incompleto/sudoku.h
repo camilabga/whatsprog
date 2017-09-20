@@ -11,8 +11,7 @@ void espera_tecla();
 void desenha_moldura(bool inicial=false);
 
 // Classe que representa uma possivel jogada (coordenadas e valor)
-class Jogada
-{
+class Jogada{
 private:
   int i,j,v;
 public:
@@ -28,11 +27,10 @@ public:
   friend class Sudoku;
 };
 
-class Sudoku
-{
+class Sudoku{
 private:
   // Matriz que contem os valores das casas do tabuleiro
-  uint8_t x[9][9];
+  unsigned x[9][9];
 public:
   // Cria um tabuleiro com o conteudo do arquivo nome_arq
   // Caso nao consiga ler do arquivo, cria tabuleiro vazio

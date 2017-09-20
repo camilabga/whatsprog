@@ -1,5 +1,4 @@
 #include <iostream>
-#include <windows.h>
 #include "console.h"
 
 // Para mais informacoes sobre impressao formatada no console:
@@ -17,8 +16,7 @@ Console Term;
 
 // Coloca o terminal do Windows no modo que permite comando
 // Faz form=true se OK; form=false em caso de erro
-Console::Console(void)
-{
+Console::Console(void){
   form = false;
   HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
   if (hOut == INVALID_HANDLE_VALUE) return;
@@ -33,23 +31,20 @@ Console::Console(void)
 }
 
 // Apaga a tela
-void Console::clrscr() const
-{
+void Console::clrscr() const{
   if (!form) return;
   cout << "\x1b[1;1H";
   cout << "\x1b[23";
 }
 
 // Posiciona o cursos nas coordenadas desejadas
-void Console::gotoYX(int I, int J) const
-{
+void Console::gotoYX(int I, int J) const{
   if (!form) return;
   cout << "\x1b[" << I << ";" << J << "H";
 }
 
 // Delete linha
-void Console::limpar_linha() const
-{
+void Console::limpar_linha() const{
   if (!form) return;
   cout << "\x1b[1M";
 }
@@ -62,22 +57,19 @@ void Console::limpar_linha() const
 //   tqqqnqqqu
 //   x   x   x
 //   mqqqvqqqj
-void Console::modo_linhas() const
-{
+void Console::modo_linhas() const{
   if (!form) return;
   cout << "\x1b(0";
 }
 
 // Retorna para o modo normal (texto)
-void Console::modo_texto() const
-{
+void Console::modo_texto() const{
   if (!form) return;
   cout << "\x1b(B";
 }
 
 // Fixa as cores da frente e do fundo do texto
-void Console::cores(CONSOLE_CORES F, CONSOLE_CORES B) const
-{
+void Console::cores(CONSOLE_CORES F, CONSOLE_CORES B) const{
   if (!form) return;
 
   int cF, cB;
@@ -196,15 +188,13 @@ void Console::cores(CONSOLE_CORES F, CONSOLE_CORES B) const
 }
 
 // Nao exibe o cursor na tela
-void Console::ocultar_cursor() const
-{
+void Console::ocultar_cursor() const{
   if (!form) return;
   cout << "\x1b[?25l";
 }
 
 // Exibe o cursor na tela
-void Console::exibir_cursor() const
-{
+void Console::exibir_cursor() const{
   if (!form) return;
   cout << "\x1b[?25h";
 }
@@ -212,16 +202,14 @@ void Console::exibir_cursor() const
 // Muda para a tela alternativa
 // O conteudo original da tela que havia quando o programa foi iniciado
 // retornarah quando o programa for encerrado
-void Console::tela_alternativa() const
-{
+void Console::tela_alternativa() const{
   if (!form) return;
   cout << "\x1b[?1049h";
 }
 
 // Volta para a tela normal;
 // Retorna o conteudo que havia na tela antes do programa ser executado
-void Console::tela_normal() const
-{
+void Console::tela_normal() const{
   if (!form) return;
   cout << "\x1b[?1049l";
 }
