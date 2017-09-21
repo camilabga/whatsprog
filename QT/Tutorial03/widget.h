@@ -15,6 +15,9 @@ public:
     explicit Widget(QWidget *parent = 0);
     ~Widget();
 
+private slots:
+    void on_horizontalSlider_actionTriggered(int action);
+
 private:
     Ui::Widget *ui;
 };

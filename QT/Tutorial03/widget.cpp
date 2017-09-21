@@ -12,3 +12,8 @@ Widget::~Widget()
 {
     delete ui;
 }
+
+void Widget::on_horizontalSlider_actionTriggered(int action)
+{
+    connect(ui->horizontalSlider, SIGNAL (valueChanged(int)), ui->progressBar, SLOT (setValue(int)));
+}
