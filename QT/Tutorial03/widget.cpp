@@ -15,5 +15,7 @@ Widget::~Widget()
 
 void Widget::on_horizontalSlider_actionTriggered(int action)
 {
+    /*int x = ui->horizontalSlider->value();
+    ui->progressBar->setValue(x);*/
     connect(ui->horizontalSlider, SIGNAL (valueChanged(int)), ui->progressBar, SLOT (setValue(int)));
 }

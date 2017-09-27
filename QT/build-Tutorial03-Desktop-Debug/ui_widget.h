@@ -47,6 +47,7 @@ public:
         horizontalSlider = new QSlider(verticalLayoutWidget);
         horizontalSlider->setObjectName(QStringLiteral("horizontalSlider"));
         horizontalSlider->setMaximum(100);
+        horizontalSlider->setPageStep(1);
         horizontalSlider->setSliderPosition(50);
         horizontalSlider->setOrientation(Qt::Horizontal);
 
