@@ -1,6 +1,5 @@
 #include "sudoku.h"
 #include <QApplication>
-#include "console.h"
 #include "sudoku2.h"
 
 Sudoku S("../Sudoku/sudoku.txt");

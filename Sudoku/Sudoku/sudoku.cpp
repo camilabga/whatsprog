@@ -22,17 +22,57 @@ MainSudoku::MainSudoku(QWidget *parent) :
     ui(new Ui::MainSudoku)
 {
     ui->setupUi(this);
-    for(int i = 0;i<9;i++)for(int j = 0;j<9;j++){
-        if(S.get_x(i, j)!=0)
-            ui->tabuleiro->setItem(i,j,new QTableWidgetItem(QString::number(S.get_x(i, j))));
-    }
-    // ->setBackground(Qt::COR));
 
+    // ->setBackground(Qt::COR));
+    desenha_tab(S);
 }
 
 MainSudoku::~MainSudoku()
 {
     delete ui;
+}
+
+void MainSudoku::desenha_tab(Sudoku s, int I, int J){
+    QLabel *prov;
+    if(I==-1&&J==-1)
+        for(int i = 0;i<9;i++)for(int j = 0;j<9;j++){
+            prov = new QLabel;
+            /*
+            if(padrao)
+                prov->setStyleSheet("color: red;"
+                                    "alignment: center;");
+            if(((i/3)!=1&&(j/3)!=1)||((i/3)==1&&(j/3)==1)&&padrao)
+                    prov->setStyleSheet("color: red; "
+                                        "background-color: yellow");
+            */
+
+            if(!(((i/3)!=1&&(j/3)!=1)||((i/3)==1&&(j/3)==1)))
+                prov->setStyleSheet("color: black; "
+                                    "background-color: gray");
+            //prov->setAlignment(Qt::AlignCenter);
+            if(s.get_x(i, j)!=0)
+                prov->setText(QString::number(s.get_x(i, j)));
+            prov->setAlignment(Qt::AlignCenter);
+            ui->tabuleiro->setCellWidget(i, j, prov);
+        }
+    if((I>=0&&I<9)&&(J>=0&&J<9)){
+            prov = new QLabel;
+            if(s.get_x(I, J)!=0)
+                prov->setStyleSheet("color: red; "
+                                    "text-align: center;"
+                                    "alignment: center;");
+            if(!(((I/3)!=1&&(J/3)!=1)||((I/3)==1&&(J/3)==1)))
+                prov->setStyleSheet("color: black; "
+                                    "text-align: center;"
+                                    "alignment: center;"
+                                    "background-color: gray");
+
+            if(s.get_x(I, J)!=0)
+                prov->setText(QString::number(s.get_x(I, J)));
+            prov->setAlignment(Qt::AlignCenter);
+            ui->tabuleiro->setCellWidget(I, J, prov);
+    }
+
 }
 
 Jogada::Jogada(int I, int J, int V){
@@ -203,10 +243,8 @@ void MainSudoku::on_resolverbutton_clicked()
     it.append("Iteracoes: ");
     it.append(QString::number(S.resolver()));
     ui->Iteracoes->setText(it);
-    for(int i = 0;i<9;i++)
-        for(int j = 0;j<9;j++)
-            if(S.get_x(i,j)!=0)
-                ui->tabuleiro->setItem(i,j,new QTableWidgetItem(QString::number(S.get_x(i, j))));
+
+    desenha_tab(S);
 }
 
 void MainSudoku::on_limparbutton_clicked()
@@ -215,13 +253,8 @@ void MainSudoku::on_limparbutton_clicked()
     it.append("Iteracoes: 0");
     ui->Iteracoes->setText(it);
     S.reiniciar();
-    for(int i = 0;i<9;i++)
-        for(int j = 0;j<9;j++){
-            if(S.get_x(i,j)!=0)
-                ui->tabuleiro->setItem(i,j,new QTableWidgetItem(QString::number(S.get_x(i, j))));
-            else
-                ui->tabuleiro->setItem(i,j,new QTableWidgetItem(QString("")));
-        }
+
+    desenha_tab(S);
 }
 
 void MainSudoku::on_actionSair_triggered()
@@ -269,11 +302,7 @@ void MainSudoku::on_actionNovo_Jogo_triggered(){
     it.append("Iteracoes: 0");
     ui->Iteracoes->setText(it);
     S.reiniciar();
-    for(int i = 0;i<9;i++)
-        for(int j = 0;j<9;j++){
-            if(S.get_x(i,j)!=0)
-                ui->tabuleiro->setItem(i,j,new QTableWidgetItem(QString::number(S.get_x(i, j))));
-            else
-                ui->tabuleiro->setItem(i,j,new QTableWidgetItem(QString("")));
-        }
+
+
+    desenha_tab(S);
 }
