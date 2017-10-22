@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include "circuito.h"
+#include "circuito_STL.h"
 
 using namespace std;
 
