@@ -458,7 +458,10 @@ void Circuito::simular(){
 
                 for (unsigned j = 0; j < portas[i]->getNumInputs(); i++) {
                     if (portas[i]->getId_in(j) < 0)
-                        in_porta[j] =  
+                        in_porta[j] = inputs[-1*(portas[i]->getId_in(j))-1];
+
+                    if (portas[i]->getId_in(j) > 0)
+                        in_porta[j] = portas[portas[i]->getId_in(j)-1]->getSaida();
                 }
 
                 portas[i]->simular(in_porta);
