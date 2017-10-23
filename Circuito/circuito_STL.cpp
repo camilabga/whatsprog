@@ -26,7 +26,7 @@ int Porta::getId_in(unsigned i) const{
 
 void Porta::setId_in(unsigned i, int N){
     if (i < Nin) {
-        if (N != 0)
+        if (N == 0)
             cerr << "N INVALIDO";
 
         id_in[i] = N;
@@ -439,4 +439,37 @@ void Circuito::limpar(){
     inputs.clear();
     id_out.clear();
     portas.clear();
+}
+
+void Circuito::simular(){
+    for (unsigned i = 0; i < Nportas; i++) {
+        portas[i]->setSaida(UNDEF_3S);
+    }
+
+    bool tudo_def, alguma_def;
+    bool_3S in_porta[NUM_MAX_INPUTS_PORTA];
+
+    do {
+        tudo_def = true;
+        alguma_def = false;
+
+        for (unsigned i = 0; i < Nportas; i++) {
+            if (portas[i]->getSaida() == UNDEF_3S) {
+
+                for (unsigned j = 0; j < portas[i]->getNumInputs(); i++) {
+                    if (portas[i]->getId_in(j) < 0)
+                        in_porta[j] =  
+                }
+
+                portas[i]->simular(in_porta);
+
+                if (portas[i]->getSaida() == UNDEF_3S) {
+                    tudo_def = false;
+                } else {
+                    alguma_def = true;
+                }
+            }
+        }
+
+    } while(!tudo_def && alguma_def);
 }
