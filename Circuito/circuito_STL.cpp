@@ -80,7 +80,7 @@ bool Porta::ler(istream &I){
 }
 
 ostream &Porta::imprimir(ostream &O) const{
-    if(Nin > 0 &&  Nin < 4){
+    if(Nin > 1 &&  Nin < NUM_MAX_INPUTS_PORTA){
         for (unsigned i =0; i<Nin; i++){
             O << id_in[i] << " ";
         }
@@ -129,13 +129,305 @@ bool_3S Porta_NOT::simular(const bool_3S in[]){
 
 /* FUNÇÕES DE PORTA OR */
 
+ostream &Porta_OR::imprimir(ostream &O) const{
+    O << "OR " << Nin << ": ";
+    Porta::imprimir(O);
+    return O;
+}
+
+bool_3S Porta_OR::simular(const bool_3S in[]){
+    switch (Nin){
+        case 2:
+            if(in[0] == TRUE_3S || in[1] == TRUE_3S){
+                saida = TRUE_3S;
+            } else if(in[0] == UNDEF_3S || in[1] == UNDEF_3S){
+                saida = UNDEF_3S;
+            } else {
+                saida = FALSE_3S;
+            }
+            break;
+        case 3:
+            if(in[0] == TRUE_3S || in[1] == TRUE_3S || in[2] == TRUE_3S){
+                saida = TRUE_3S;
+                return saida;
+            }else if(in[0] == UNDEF_3S || in[1] == UNDEF_3S || in[2] == UNDEF_3S){
+                saida = UNDEF_3S;
+            }else{
+                saida = FALSE_3S;
+            }
+            break;
+        case 4:
+            if(in[0] == TRUE_3S || in[1] == TRUE_3S || in[2] == TRUE_3S || in[3] == TRUE_3S){
+                saida = TRUE_3S;
+            }else if(in[0] == UNDEF_3S || in[1] == UNDEF_3S || in[2] == UNDEF_3S || in[3] == UNDEF_3S){
+                saida = UNDEF_3S;
+            }else{
+                saida = FALSE_3S;
+            }
+            break;
+        default:
+            cerr << "Numero de entradas invalido.";
+            return UNDEF_3S;
+    }
+
+    return saida;
+}
+
 /* FUNÇÕES DE PORTA AND */
+
+ostream &Porta_AND::imprimir(ostream &O) const{
+    O << "AN " << Nin << ": ";
+    Porta::imprimir(O);
+    return O;
+}
+
+bool_3S Porta_AND::simular(const bool_3S in[]){
+    switch (Nin){
+        case 2:
+            if (in[0] == TRUE_3S && in[1] == TRUE_3S) {
+                saida = TRUE_3S;
+            } else if (in[0] == FALSE_3S || in[1] == FALSE_3S) {
+                saida = FALSE_3S;
+            } else {
+                saida = UNDEF_3S;
+            }
+        break;
+
+        case 3:
+            if (in[0] == TRUE_3S && in[1] == TRUE_3S
+                && in[2] == TRUE_3S) {
+                saida = TRUE_3S;
+            } else if (in[0] == FALSE_3S || in[1] == FALSE_3S
+                || in[2] == FALSE_3S) {
+                saida = FALSE_3S;
+            } else {
+                saida = UNDEF_3S;
+            }
+        break;
+
+        case 4:
+            if (in[0] == TRUE_3S && in[1] == TRUE_3S
+                && in[2] == TRUE_3S && in[3] == TRUE_3S) {
+                saida = TRUE_3S;
+            } else if (in[0] == FALSE_3S || in[1] == FALSE_3S
+                || in[2] == FALSE_3S || in[3] == FALSE_3S) {
+                saida = FALSE_3S;
+            } else {
+                saida = UNDEF_3S;
+            }
+        break;
+
+        default:
+            cerr << "Numero de entradas invalido.";
+            return UNDEF_3S;
+
+    }
+
+    return saida;
+}
+
+/* FUNÇÕES DE PORTA NAND */
+
+ostream &Porta_NAND::imprimir(ostream &O) const{
+    O << "NA " << Nin << ": ";
+    Porta::imprimir(O);
+    return O;
+}
+
+bool_3S Porta_NAND::simular(const bool_3S in[]){
+    switch (Nin){
+        case 2:
+            if (in[0] == TRUE_3S && in[1] == TRUE_3S) {
+                saida = FALSE_3S;
+            } else if (in[0] == FALSE_3S || in[1] == FALSE_3S) {
+                saida = TRUE_3S;
+            } else {
+                saida = UNDEF_3S;
+            }
+        break;
+
+        case 3:
+            if (in[0] == TRUE_3S && in[1] == TRUE_3S
+                && in[2] == TRUE_3S) {
+                saida = FALSE_3S;
+            } else if (in[0] == FALSE_3S || in[1] == FALSE_3S
+                || in[2] == FALSE_3S) {
+                saida = TRUE_3S;
+            } else {
+                saida = UNDEF_3S;
+            }
+        break;
+
+        case 4:
+            if (in[0] == TRUE_3S && in[1] == TRUE_3S
+                && in[2] == TRUE_3S && in[3] == TRUE_3S) {
+                saida = FALSE_3S;
+            } else if (in[0] == FALSE_3S || in[1] == FALSE_3S
+                || in[2] == FALSE_3S || in[3] == FALSE_3S) {
+                saida = TRUE_3S;
+            } else {
+                saida = UNDEF_3S;
+            }
+        break;
+
+        default:
+            cerr << "Numero de entradas invalido.";
+            return UNDEF_3S;
+
+    }
+
+    return saida;
+}
+
 
 /* FUNÇÕES DE PORTA NOR */
 
+ostream &Porta_NOR::imprimir(ostream &O) const{
+    O << "NO " << Nin << ": ";
+    Porta::imprimir(O);
+    return O;
+}
+
+bool_3S Porta_NOR::simular(const bool_3S in[]){
+    switch (Nin){
+        case 2:
+            if(in[0] == TRUE_3S || in[1] == TRUE_3S){
+                saida = FALSE_3S;
+            } else if(in[0] == UNDEF_3S || in[1] == UNDEF_3S){
+                saida = UNDEF_3S;
+            } else {
+                saida = TRUE_3S;
+            }
+
+            break;
+        case 3:
+            if(in[0] == TRUE_3S || in[1] == TRUE_3S || in[2] == TRUE_3S){
+                saida = FALSE_3S;
+                return saida;
+            }else if(in[0] == UNDEF_3S || in[1] == UNDEF_3S || in[2] == UNDEF_3S){
+                saida = UNDEF_3S;
+            }else{
+                saida = TRUE_3S;
+            }
+            break;
+        case 4:
+            if(in[0] == TRUE_3S || in[1] == TRUE_3S || in[2] == TRUE_3S || in[3] == TRUE_3S){
+                saida = FALSE_3S;
+            }else if(in[0] == UNDEF_3S || in[1] == UNDEF_3S || in[2] == UNDEF_3S || in[3] == UNDEF_3S){
+                saida = UNDEF_3S;
+            }else{
+                saida = TRUE_3S;
+            }
+            break;
+        default:
+            cerr << "Numero de entradas invalido.";
+            return UNDEF_3S;
+    }
+
+    return saida;
+}
+
 /* FUNÇÕES DE PORTA XOR */
 
+ostream &Porta_XOR::imprimir(ostream &O) const{
+    O << "XO " << Nin << ": ";
+    Porta::imprimir(O);
+    return O;
+}
+
+bool_3S Porta_XOR::simular(const bool_3S in[]){
+    switch (Nin){
+        case 2:
+            if(in[0] == UNDEF_3S || in[1] == UNDEF_3S){
+                saida = UNDEF_3S;
+            } else if(in[0] == in[1]){
+                saida = FALSE_3S;
+            } else{
+                saida = TRUE_3S;
+            }
+
+            break;
+
+        case 3:
+            if(in[0] == UNDEF_3S || in[1] == UNDEF_3S || in[2] == UNDEF_3S){
+                saida = UNDEF_3S;
+            }else if(in[0] == in[1] && in[0] == in[2]){
+                saida = FALSE_3S;
+            }else{
+                saida = TRUE_3S;
+            }
+            break;
+
+        case 4:
+            if(in[0] == UNDEF_3S || in[1] == UNDEF_3S || in[2] == UNDEF_3S 
+                || in[3] == UNDEF_3S){
+                saida = UNDEF_3S;
+            }else if(in[0] == in[1] && in[0] == in[2] && in[0] == in[3]){
+                saida = FALSE_3S;
+            }else{
+                saida = TRUE_3S;
+            }
+            break;
+
+        default:
+            cerr << "Numero de entradas invalido.";
+            return UNDEF_3S;
+    }
+
+    return saida;
+}
+
 /* FUNÇÕES DE PORTA NXOR */
+
+ostream &Porta_NXOR::imprimir(ostream &O) const{
+    O << "NX " << Nin << ": ";
+    Porta::imprimir(O);
+    return O;
+}
+
+bool_3S Porta_NXOR::simular(const bool_3S in[]){
+    switch (Nin){
+        case 2:
+            if(in[0] == UNDEF_3S || in[1] == UNDEF_3S){
+                saida = UNDEF_3S;
+            } else if(in[0] == in[1]){
+                saida = TRUE_3S;
+            } else{
+                saida = FALSE_3S;
+            }
+
+            break;
+
+        case 3:
+            if(in[0] == UNDEF_3S || in[1] == UNDEF_3S || in[2] == UNDEF_3S){
+                saida = UNDEF_3S;
+            }else if(in[0] == in[1] && in[0] == in[2]){
+                saida = TRUE_3S;
+            }else{
+                saida = FALSE_3S;
+            }
+            break;
+
+        case 4:
+            if(in[0] == UNDEF_3S || in[1] == UNDEF_3S || in[2] == UNDEF_3S 
+                || in[3] == UNDEF_3S){
+                saida = UNDEF_3S;
+            }else if(in[0] == in[1] && in[0] == in[2] && in[0] == in[3]){
+                saida = TRUE_3S;
+            }else{
+                saida = FALSE_3S;
+            }
+            break;
+
+        default:
+            cerr << "Numero de entradas invalido.";
+            return UNDEF_3S;
+    }
+
+    return saida;
+}
+
+/* FUNÇÕES DE CIRCUITO */
 
 void Circuito::alocar(unsigned NI, unsigned NO, unsigned NP){
     inputs.resize(NI);
