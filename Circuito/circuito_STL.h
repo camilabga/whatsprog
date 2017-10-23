@@ -33,7 +33,7 @@ class Porta {
     virtual ptr_Porta clone() const = 0;
     inline unsigned getNumInputs() const {return Nin;}
     inline bool_3S getSaida() const {return saida;}
-    inline void setSaida(bool_3S s){saida = s;}
+    void setSaida(bool_3S s);
     int getId_in(unsigned i) const;
     void setId_in(unsigned i, int N);
 
