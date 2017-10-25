@@ -18,7 +18,7 @@ Porta::Porta(const Porta &P){
 
 int Porta::getId_in(unsigned i) const{
     if (i < Nin) {
-        return id_in[Nin];
+        return id_in[i];
     } else {
         cerr << "ID_IN INVALIDO";
     }
@@ -433,12 +433,147 @@ void Circuito::alocar(unsigned NI, unsigned NO, unsigned NP){
     inputs.resize(NI);
     id_out.resize(NO);
     portas.resize(NP);
+    Nin = NI;
+    Nout = NO;
+    Nportas = NP;
 }
 
 void Circuito::limpar(){
     inputs.clear();
     id_out.clear();
     portas.clear();
+    Nin = 0;
+    Nout = 0;
+    Nportas = 0;
+}
+
+void Circuito::digitar(){
+    int NI, NO, NP;
+    do{
+        cout<<"Quantidade de entradas: ";
+        cin>>NI;
+    } while(NI>4);
+    do{
+        cout<<"Quantidade de saidas: ";
+        cin>>NO;
+    } while(NO<=0);
+    cout<<"Quantidade de portas: ";
+    cin>>NP;
+    limpar();
+    alocar(NI,NO,NP);
+
+    unsigned cont=0;
+    Porta_NOT NT;
+    Porta_AND AN;
+    Porta_NAND NA;
+    Porta_OR OR;
+    Porta_NOR NOR;
+    Porta_XOR XO;
+    Porta_NXOR NX;
+    string tipo;
+    do{
+        cout << "digite o tipo da porta " << cont+1 << ": ";
+        cin >> tipo;
+        if(tipo == "NT") portas[cont] = (&NT) -> clone();
+        else if(tipo == "AN") portas[cont] = (&AN) -> clone();
+        else if(tipo == "NA") portas[cont] = (&NA) -> clone();
+        else if(tipo == "OR") portas[cont] = (&OR) -> clone();
+        else if(tipo == "NO") portas[cont] = (&NOR) -> clone();
+        else if(tipo == "XO") portas[cont] = (&XO) -> clone();
+        else if(tipo == "NX") portas[cont] = (&NX) -> clone();
+        else{
+            cerr << "Tipo de porta inesistente.";
+            limpar();
+            return;
+        }
+        portas[cont] -> digitar();
+        cont++;
+    } while(cont < Nportas);
+    int ID;
+    for(unsigned i=0; i < Nout; i++) {
+        cout << "ID do sinal que vai para a saida " << i+1 << endl;
+        cin >> ID;
+        if(ID <= Nportas){
+            id_out[i] = ID;
+        } else {
+            cerr << "id invalido.";
+            return;
+        }
+    }
+}
+
+void Circuito::ler(const char *arq){
+    ifstream arquivo(arq);
+    string prov, tipo;
+    int NI, NO, NP, Nin;
+    if (arquivo.is_open()){
+        arquivo>>prov>>NI>>NO>>NP;
+        if(prov!="CIRCUITO:"||NI<=0||NO<=0||NP<=0){
+            cerr<<"Erro: Cabecalho 'CIRCUITO:'";
+            return;
+        }
+        limpar();
+        alocar(NI,NO,NP);
+        arquivo.ignore(255,'\n');
+
+        arquivo>>prov;
+
+        if(prov!="PORTAS"){
+            cerr<<"Erro: Palavra chave 'PORTAS:'";
+            return;
+        }
+        arquivo.ignore(255,'\n');
+
+        Porta_NOT NT;
+        Porta_AND AN;
+        Porta_NAND NA;
+        Porta_OR OR;
+        Porta_NOR NOR;
+        Porta_XOR XO;
+        Porta_NXOR NX;
+        int i=0, int_prov;
+        do{
+            arquivo >> int_prov;
+            if(int_prov != i+1){
+                cerr<<"Portas fora de ordem, ou faltando\n";
+                return;
+            }
+            arquivo.ignore(255, ' ');
+            arquivo >> tipo;
+            if(tipo == "NT") portas[i] = (&NT) -> clone();
+            else if(tipo == "AN") portas[i] = (&AN) -> clone();
+            else if(tipo == "NA") portas[i] = (&NA) -> clone();
+            else if(tipo == "OR") portas[i] = (&OR) -> clone();
+            else if(tipo == "NO") portas[i] = (&NOR) -> clone();
+            else if(tipo == "XO") portas[i] = (&XO) -> clone();
+            else if(tipo == "NX") portas[i] = (&NX) -> clone();  
+            else cerr<<"Tipo de porta inexistentes";
+            portas[i]->ler(arquivo);
+        } while(i < NP);
+        arquivo>>prov;
+        if(prov!="SAIDAS:"){
+            cerr<<"Erro: Palavra chave 'SAIDAS:'";
+            return;
+        }
+        arquivo.ignore(255, '\n');
+        i=0;
+        do{
+            arquivo >> int_prov;
+            if(int_prov != i+1){
+                cerr<<"Saidas fora de ordem, ou fantando\n";
+                return;
+            }
+            arquivo.ignore(255, ' ');
+            arquivo >> int_prov;
+            if(int_prov>NP||int_prov==0){
+                cerr<<"Id out > Nportas";
+                return;
+            }
+            id_out[i]=int_prov;
+            i++;
+        }  while(i<NO);
+    }
+    
 }
 
 void Circuito::simular(){
@@ -448,31 +583,39 @@ void Circuito::simular(){
 
     bool tudo_def, alguma_def;
     bool_3S in_porta[NUM_MAX_INPUTS_PORTA];
-
+    
     do {
         tudo_def = true;
         alguma_def = false;
 
         for (unsigned i = 0; i < Nportas; i++) {
+            
             if (portas[i]->getSaida() == UNDEF_3S) {
 
-                for (unsigned j = 0; j < portas[i]->getNumInputs(); i++) {
-                    if (portas[i]->getId_in(j) < 0)
+                for (unsigned j = 0; j < portas[i]->getNumInputs(); j++) {
+                    
+                    if (portas[i]->getId_in(j) < 0){
                         in_porta[j] = inputs[-1*(portas[i]->getId_in(j))-1];
+                    }
 
-                    if (portas[i]->getId_in(j) > 0)
+                    if (portas[i]->getId_in(j) > 0){
                         in_porta[j] = portas[portas[i]->getId_in(j)-1]->getSaida();
-                }
-
+                    }
+                }                
+                
                 portas[i]->simular(in_porta);
-
-                if (portas[i]->getSaida() == UNDEF_3S) {
+                
+                if (portas[i]->getSaida() == UNDEF_3S) {                   
                     tudo_def = false;
-                } else {
+                } else {                   
                     alguma_def = true;
                 }
             }
         }
-
     } while(!tudo_def && alguma_def);
+
+    for (unsigned i = 0; i < Nportas; i++) {
+        cout << endl << "saida = " << portas[i]->getSaida() << endl;
+    }
+
 }

@@ -4,11 +4,16 @@
 
 using namespace std;
 
-int main(void)
-{
+int main(void){
   Circuito C;
+  C.digitar();
+  C.simular();
+
+  /*Circuito C;
   string nome;
   int opcao;
+
+
 
   do {
     cout << "\nPROGRAMA SIMULADOR DE CIRCUITOS DIGITAIS:\n";
@@ -56,5 +61,5 @@ int main(void)
     default:
       break;
     }
-  } while(opcao != 0);
+  } while(opcao != 0);*/
 }
