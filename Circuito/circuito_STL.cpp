@@ -613,9 +613,35 @@ void Circuito::simular(){
             }
         }
     } while(!tudo_def && alguma_def);
+}
 
+void Circuito::digitarEntradas(){
+    cout << "ENTRADAS DO CIRCUITO" << endl;
+    int aux;
+    for (unsigned i = 0; i < Nin; i++) {
+        do {
+            cout << "Entrada [0] FALSE - [1] TRUE - [-1] UNDEF" << endl;
+            cout << "Entrada [" << i+1 << "] = ";
+            cin >> aux;
+        } while (aux != -1 && aux != 1 && aux != 0);
+        switch (aux) {
+            case 0:
+                inputs[i] = FALSE_3S;
+            break;
+
+            case 1:
+                inputs[i] = TRUE_3S;
+            break;
+
+            case -1:
+                inputs[i] = UNDEF_3S;
+            break;
+        }
+    }
+}
+
+void Circuito::imprimirSaidas(void) const{
     for (unsigned i = 0; i < Nportas; i++) {
         cout << endl << "saida = " << portas[i]->getSaida() << endl;
     }
-
 }

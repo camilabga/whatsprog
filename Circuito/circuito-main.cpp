@@ -7,7 +7,9 @@ using namespace std;
 int main(void){
   Circuito C;
   C.digitar();
+  C.digitarEntradas();
   C.simular();
+  C.imprimirSaidas();
 
   /*Circuito C;
   string nome;
