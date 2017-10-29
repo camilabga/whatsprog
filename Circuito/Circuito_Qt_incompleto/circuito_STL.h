@@ -138,6 +138,12 @@ class Circuito {
     void alocar(unsigned NI, unsigned NO, unsigned NP);  // ATENCAO: fora de construtor, sempre chamar antes limpar()
     void copiar(const Circuito &C);                      // ATENCAO: fora de construtor, sempre chamar antes limpar()
   public:
+    inline unsigned getNin(){return Nin;}
+    inline unsigned getNout(){return Nout;}
+    inline unsigned getNportas(){return Nportas;}
+    inline void setNin(unsigned N){Nin = N;}
+    inline void setNout(unsigned N){Nout = N;}
+    inline void setNportas(unsigned N){Nportas = N;}
     // As variaveis do tipo Circuito sao sempre criadas sem nenhum dado
     // A definicao do numero de entradas, saidas e portas eh feita ao ler do teclado ou arquivo
     inline Circuito():Nin(0),Nout(0),Nportas(0),inputs(),id_out(),portas() {}
@@ -176,4 +182,5 @@ class Circuito {
 
 inline ostream &operator<<(ostream &O, const Circuito &C) {return C.imprimir(O);}
 
+extern Circuito C;
 #endif // _CIRCUITO_H_
