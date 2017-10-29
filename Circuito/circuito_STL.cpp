@@ -645,3 +645,41 @@ void Circuito::imprimirSaidas(void) const{
         cout << endl << "saida = " << portas[i]->getSaida() << endl;
     }
 }
+
+void Circuito::gerarTabela(void){
+    for(int i=0; i<Nin; i++){
+        inputs[i] = FALSE_3S;
+    }
+    int i=0;
+
+    for(int k=0;k<Nin;k++)
+        cout<<"In"<<k+1<<"\t";
+    cout<<"|\t";
+    for(int k=0;k<Nout;k++)
+        cout<<"Out"<<k+1<<"\t";
+
+    cout<<endl;
+    do{
+        simular();
+        for(int k=0;k<Nin;k++)
+            cout<<inputs[k]<<"\t";
+        cout<<"|\t";
+        for(int j=0;j<Nout;j++)
+            cout<<portas[j]->getSaida()<<"\t";
+        
+        cout<<endl;
+        
+        i=Nin-1;
+        while(i>=0 && inputs[i]==UNDEF_3S){
+            inputs[i]=FALSE_3S;
+            i--;
+        }
+        if(i>=0){
+            if(inputs[i]==FALSE_3S)
+                inputs[i]=TRUE_3S;
+            else
+                inputs[i]=UNDEF_3S;
+        }
+    }
+    while(i>=0);
+}
