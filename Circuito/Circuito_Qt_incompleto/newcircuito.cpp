@@ -2,6 +2,7 @@
 #include "ui_newcircuito.h"
 #include "maincircuito.h"
 #include <QMessageBox>
+#include "circuito_STL.h"
 
 NewCircuito::NewCircuito(QWidget *parent) :
     QDialog(parent),
@@ -27,12 +28,19 @@ void NewCircuito::on_NewCircuito_accepted()
 
     // O circuito deve ser criado usando a funcao apropriada da classe Circuito
 
+    //Circuito temp(numInputs,numOutputs,numPortas);
+    //C = temp;
+    C.limpar();
+    C.setNin(numInputs);
+    C.setNout(numOutputs);
+    C.setNportas(numPortas);
+
     // Provisoriamente, estamos apenas exibindo uma msg
-    QMessageBox msgBox;
+/*    QMessageBox msgBox;
     msgBox.setText(QString("Cria circuito com %1 entradas, %2 saídas e %3 portas")
                    .arg(numInputs).arg(numOutputs).arg(numPortas));
     msgBox.exec();
-
+*/
     // Depois do novo circuito criado, as tabelas devem ser redimensionadas
     ((MainCircuito*)parentWidget())->redimensiona_tabelas();
 }

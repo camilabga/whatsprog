@@ -26,10 +26,14 @@ class Porta {
     unsigned Nin;
     int id_in[NUM_MAX_INPUTS_PORTA];
     bool_3S saida;
+    int tipo;
   public:
     Porta(unsigned NI=2);
     Porta(const Porta &P);
     inline virtual ~Porta() {}
+
+    inline int getTipo(){return tipo;}
+    inline void setTipo(int t){if(t>0 && t<8) tipo=t;}
 
     virtual ptr_Porta clone() const = 0;
     inline unsigned getNumInputs() const {return Nin;}
@@ -63,7 +67,7 @@ class Porta_NOT: public Porta {
 
 class Porta_AND: public Porta {
   public:
-    inline Porta_AND(): Porta() {}
+    inline Porta_AND(int i): Porta(i) {}
     inline ~Porta_AND() {}
     ptr_Porta clone() const {return new Porta_AND(*this);}
 
@@ -74,7 +78,7 @@ class Porta_AND: public Porta {
 
 class Porta_NAND: public Porta {
   public:
-    inline Porta_NAND(): Porta() {}
+    inline Porta_NAND(int i): Porta(i) {}
     inline ~Porta_NAND() {}
     ptr_Porta clone() const {return new Porta_NAND(*this);}
 
@@ -85,7 +89,7 @@ class Porta_NAND: public Porta {
 
 class Porta_OR: public Porta {
   public:
-    inline Porta_OR(): Porta() {}
+    inline Porta_OR(int i): Porta(i) {}
     inline ~Porta_OR() {}
     ptr_Porta clone() const {return new Porta_OR(*this);}
 
@@ -96,7 +100,7 @@ class Porta_OR: public Porta {
 
 class Porta_NOR: public Porta {
   public:
-    inline Porta_NOR(): Porta() {}
+    inline Porta_NOR(int i): Porta(i) {}
     inline ~Porta_NOR() {}
     ptr_Porta clone() const {return new Porta_NOR(*this);}
 
@@ -107,7 +111,7 @@ class Porta_NOR: public Porta {
 
 class Porta_XOR: public Porta {
   public:
-    inline Porta_XOR(): Porta() {}
+    inline Porta_XOR(int i): Porta(i) {}
     inline ~Porta_XOR() {}
     ptr_Porta clone() const {return new Porta_XOR(*this);}
 
@@ -118,7 +122,7 @@ class Porta_XOR: public Porta {
 
 class Porta_NXOR: public Porta {
   public:
-    inline Porta_NXOR(): Porta() {}
+    inline Porta_NXOR(int i): Porta(i) {}
     inline ~Porta_NXOR() {}
     ptr_Porta clone() const {return new Porta_NXOR(*this);}
 
@@ -141,14 +145,23 @@ class Circuito {
     inline unsigned getNin(){return Nin;}
     inline unsigned getNout(){return Nout;}
     inline unsigned getNportas(){return Nportas;}
-    inline void setNin(unsigned N){Nin = N;}
-    inline void setNout(unsigned N){Nout = N;}
-    inline void setNportas(unsigned N){Nportas = N;}
+    inline void setNin(unsigned N){Nin = N; inputs.resize(N);}
+    inline void setNout(unsigned N){Nout = N; id_out.resize(N);}
+    inline void setNportas(unsigned N){Nportas = N; portas.resize(N);}
+
+    inline void setIdSaida(int saida, int id){id_out[saida]=id;}
+
+    inline int getTipo(unsigned porta){return portas[porta]->getTipo();}
+    inline unsigned getNumInputs(unsigned porta) const {return portas[porta]->getNumInputs();}
+
+    void setPorta(string tipo, int idPorta, int numInputsPorta, int *idInputPorta);
+    
     // As variaveis do tipo Circuito sao sempre criadas sem nenhum dado
     // A definicao do numero de entradas, saidas e portas eh feita ao ler do teclado ou arquivo
     inline Circuito():Nin(0),Nout(0),Nportas(0),inputs(),id_out(),portas() {}
     // Construtor por copia apenas chama a funcao copiar
     inline Circuito(const Circuito &C) {copiar(C);}
+    inline Circuito(unsigned nin,unsigned nout,unsigned nportas):inputs(),id_out(),portas(){alocar(nin,nout,nportas);}
     // Limpa todo o conteudo do circuito
     void limpar();
     // Destrutor apenas chama a funcao limpar

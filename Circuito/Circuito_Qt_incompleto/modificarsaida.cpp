@@ -1,6 +1,7 @@
 #include "modificarsaida.h"
 #include "ui_modificarsaida.h"
 #include "maincircuito.h"
+#include "circuito_STL.h"
 
 ModificarSaida::ModificarSaida(QWidget *parent) :
     QDialog(parent),
@@ -22,11 +23,9 @@ void ModificarSaida::setRangeInputs(int minimo, int maximo)
 }
 
 // Fixa a id da saida que estah sendo modificada
-void ModificarSaida::setSaida(int IdSaida)
-{
+void ModificarSaida::setSaida(int IdSaida){
     int numSaidas = ((MainCircuito*)parentWidget())->getNumSaidas();
-    if (IdSaida>=1 && IdSaida<=numSaidas)
-    {
+    if (IdSaida>=1 && IdSaida<=numSaidas){
         idSaida = IdSaida;
         ui->labelIdSaida->setNum(idSaida);
     }
@@ -39,6 +38,7 @@ void ModificarSaida::on_buttonBox_accepted()
     // com o conteudo do button, chamando um metodo da classe circuito
     int idOutput = ui->spinOrigemSaida->value();
 
+ //   C.setIdSaida(idSaida,idOutput);
     // Aqui deve ser chamado um metodo da classe Circuito que altere a saida cuja
     // id eh idSaida para que ela assuma a origem especificada por
     // idOutput

@@ -98,8 +98,8 @@ void MainCircuito::redimensiona_tabelas()
     ui->tablePortas->clearContents();
 
     ui->tablePortas->setRowCount(numPortas);
-    for (i=0; i<numPortas; i++)
-    {
+    for (i=0; i<numPortas; i++){
+        cout<<i;
         exibe_porta(i);
     }
 
@@ -170,8 +170,7 @@ void MainCircuito::redimensiona_tabelas()
 // Exibe os dados da i-esima porta
 // Essa funcao deve ser chamada sempre que mudar caracteristicas da porta
 // A funcao redimensiona_tabela jah chama essa funcao para todas as portas
-void MainCircuito::exibe_porta(int i)
-{
+void MainCircuito::exibe_porta(int i){
     if (i >= getNumPortas()) return;
 
     QString nomePorta;
@@ -183,8 +182,7 @@ void MainCircuito::exibe_porta(int i)
     // Esses valores (nomePorta, numInputsPorta, idInputPorta[])
     // devem ser lidos a partir de metodos de consulta da classe Circuito
     // Para fazer um teste, vamos atribuir quantidades aleatorias
-    switch (rand()%7)
-    {
+    switch (C.getTipo(i))  {    //falha de segmentacao-------------------------------------------
     case 0:
         nomePorta = "NT";
         break;
@@ -210,7 +208,8 @@ void MainCircuito::exibe_porta(int i)
         nomePorta = "??";
         break;
     }
-    numInputsPorta = (nomePorta != "NT" ? 2+rand()%3 : 1);
+    /*
+    numInputsPorta = C.getNumInputs(i);
     for (j=0; j<numInputsPorta; j++)
     {
         if (rand()%3 == 0)
@@ -244,7 +243,7 @@ void MainCircuito::exibe_porta(int i)
         prov->setAlignment(Qt::AlignCenter);
         if (j<numInputsPorta) prov->setNum(idInputPorta[j]);
         ui->tablePortas->setCellWidget(i,2+j,prov);
-    }
+    }*/
 }
 
 // Exibe os dados da i-esima saida

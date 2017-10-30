@@ -24,6 +24,8 @@ private slots:
     // Deve chamar a funcao apropriada da classe Circuito
     void on_NewCircuito_accepted();
 
+    void on_buttonBox_accepted();
+
 private:
     Ui::NewCircuito *ui;
 };

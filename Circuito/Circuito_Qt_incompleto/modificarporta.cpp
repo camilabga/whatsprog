@@ -76,8 +76,7 @@ void ModificarPorta::on_spinNumInputs_valueChanged(int arg1)
 }
 
 // Altera as caracteristas de uma porta de acordo com os valores especificados pelo usuario
-void ModificarPorta::on_buttonBox_accepted()
-{
+void ModificarPorta::on_buttonBox_accepted(){
     // Os valores da porta com id "idPorta" devem ser alterados de acordo
     // com o conteudo dos buttons, chamando um metodo da classe circuito
     QString tipoPorta = ui->comboTipoPorta->currentText();
@@ -87,10 +86,18 @@ void ModificarPorta::on_buttonBox_accepted()
                           ui->spinInput3->value(),
                           ui->spinInput4->value()};
 
-    C.setNin(numInputsPorta);
     // Aqui deve ser chamado um metodo da classe Circuito que altere a porta cuja
     // id eh idPorta para que ela assuma as caracteristicas especificadas por
     // tipoPorta, numInputsPorta, idInputPorta[]
+
+    if(tipoPorta == "NT") C.setPorta("NT",idPorta,numInputsPorta,idInputPorta);
+    else if(tipoPorta == "AN") C.setPorta("AN",idPorta,numInputsPorta,idInputPorta);
+    else if(tipoPorta == "NA") C.setPorta("NA",idPorta,numInputsPorta,idInputPorta);
+    else if(tipoPorta == "OR") C.setPorta("OR",idPorta,numInputsPorta,idInputPorta);
+    else if(tipoPorta == "NO") C.setPorta("NO",idPorta,numInputsPorta,idInputPorta);
+    else if(tipoPorta == "XO") C.setPorta("XO",idPorta,numInputsPorta,idInputPorta);
+    else if(tipoPorta == "NX") C.setPorta("NX",idPorta,numInputsPorta,idInputPorta);
+
 
     // Depois de alterado, deve ser reexibida a porta correspondente
     ((MainCircuito*)parentWidget())->exibe_porta(idPorta-1);

@@ -437,6 +437,13 @@ void Circuito::alocar(unsigned NI, unsigned NO, unsigned NP){
     Nout = NO;
     Nportas = NP;
 }
+void Circuito::copiar(const Circuito &C){
+    alocar(C.Nin,C.Nout,C.Nportas);
+    inputs = C.inputs;   // vetor que deve ser alocado com dimensao "Nin"
+    id_out = C.id_out;       // vetor que deve ser alocado com dimensao "Nout"
+    portas = C.portas;
+
+}
 
 void Circuito::limpar(){
     inputs.clear();
@@ -464,12 +471,12 @@ void Circuito::digitar(){
 
     unsigned cont=0;
     Porta_NOT NT;
-    Porta_AND AN;
-    Porta_NAND NA;
-    Porta_OR OR;
-    Porta_NOR NOR;
-    Porta_XOR XO;
-    Porta_NXOR NX;
+    Porta_AND AN(2);
+    Porta_NAND NA(3);
+    Porta_OR OR(4);
+    Porta_NOR NOR(5);
+    Porta_XOR XO(6);
+    Porta_NXOR NX(7);
     string tipo;
     do{
         cout << "digite o tipo da porta " << cont+1 << ": ";
@@ -489,7 +496,7 @@ void Circuito::digitar(){
         portas[cont] -> digitar();
         cont++;
     } while(cont < Nportas);
-    int ID;
+    unsigned ID;
     for(unsigned i=0; i < Nout; i++) {
         cout << "ID do sinal que vai para a saida " << i+1 << endl;
         cin >> ID;
@@ -505,7 +512,7 @@ void Circuito::digitar(){
 void Circuito::ler(const char *arq){
     ifstream arquivo(arq);
     string prov, tipo;
-    int NI, NO, NP, Nin;
+    int NI, NO, NP;
     if (arquivo.is_open()){
         arquivo>>prov>>NI>>NO>>NP;
         if(prov!="CIRCUITO:"||NI<=0||NO<=0||NP<=0){
@@ -525,12 +532,12 @@ void Circuito::ler(const char *arq){
         arquivo.ignore(255,'\n');
 
         Porta_NOT NT;
-        Porta_AND AN;
-        Porta_NAND NA;
-        Porta_OR OR;
-        Porta_NOR NOR;
-        Porta_XOR XO;
-        Porta_NXOR NX;
+        Porta_AND AN(2);
+        Porta_NAND NA(3);
+        Porta_OR OR(4);
+        Porta_NOR NOR(5);
+        Porta_XOR XO(6);
+        Porta_NXOR NX(7);
         int i=0, int_prov;
         do{
             arquivo >> int_prov;
@@ -647,24 +654,24 @@ void Circuito::imprimirSaidas(void) const{
 }
 
 void Circuito::gerarTabela(void){
-    for(int i=0; i<Nin; i++){
+    for(unsigned i=0; i<Nin; i++){
         inputs[i] = FALSE_3S;
     }
     int i=0;
 
-    for(int k=0;k<Nin;k++)
+    for(unsigned k=0;k<Nin;k++)
         cout<<"In"<<k+1<<"\t";
     cout<<"|\t";
-    for(int k=0;k<Nout;k++)
+    for(unsigned k=0;k<Nout;k++)
         cout<<"Out"<<k+1<<"\t";
 
     cout<<endl;
     do{
         simular();
-        for(int k=0;k<Nin;k++)
+        for(unsigned k=0;k<Nin;k++)
             cout<<inputs[k]<<"\t";
         cout<<"|\t";
-        for(int j=0;j<Nout;j++)
+        for(unsigned j=0;j<Nout;j++)
             cout<<portas[j]->getSaida()<<"\t";
         
         cout<<endl;
@@ -682,4 +689,50 @@ void Circuito::gerarTabela(void){
         }
     }
     while(i>=0);
+}
+
+void Circuito::setPorta(string tipo, int idPorta, int numInputsPorta, int *idInputPorta){
+    if(tipo == "NT"){
+        Porta_NOT NT;
+        portas[idPorta] = (&NT) -> clone();
+        portas[idPorta]->setTipo(1);
+    }
+    else if(tipo == "AN") {
+        Porta_AND AN(numInputsPorta);
+        portas[idPorta] = (&AN) -> clone();
+        portas[idPorta]->setTipo(2);
+    }
+    else if(tipo == "NA")  {
+        Porta_NAND NA(numInputsPorta);
+        portas[idPorta] = (&NA) -> clone();
+        portas[idPorta]->setTipo(3);
+    }
+    else if(tipo == "OR")  {
+        Porta_OR OR(numInputsPorta);
+        portas[idPorta] = (&OR) -> clone();
+        portas[idPorta]->setTipo(4);
+    }
+    else if(tipo == "NO")  {
+        Porta_NOR NOR(numInputsPorta);
+        portas[idPorta] = (&NOR) -> clone();
+        portas[idPorta]->setTipo(5);
+    }
+    else if(tipo == "XO")  {
+        Porta_XOR XO(numInputsPorta);
+        portas[idPorta] = (&XO) -> clone();
+        portas[idPorta]->setTipo(6);
+    }
+    else if(tipo == "NX")  {
+        Porta_NXOR NX(numInputsPorta);
+        portas[idPorta] = (&NX) -> clone();
+        portas[idPorta]->setTipo(7);
+    }
+    else{
+        cerr << "Tipo de porta inesistente.";
+        limpar();
+        return;
+    }
+    for(int i =0; i<numInputsPorta;i++)
+         portas[idPorta]->setId_in(i,idInputPorta[i]);
+
 }
