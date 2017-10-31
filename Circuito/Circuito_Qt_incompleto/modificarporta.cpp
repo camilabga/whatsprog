@@ -90,13 +90,13 @@ void ModificarPorta::on_buttonBox_accepted(){
     // id eh idPorta para que ela assuma as caracteristicas especificadas por
     // tipoPorta, numInputsPorta, idInputPorta[]
 
-    if(tipoPorta == "NT") C.setPorta("NT",idPorta,numInputsPorta,idInputPorta);
-    else if(tipoPorta == "AN") C.setPorta("AN",idPorta,numInputsPorta,idInputPorta);
-    else if(tipoPorta == "NA") C.setPorta("NA",idPorta,numInputsPorta,idInputPorta);
-    else if(tipoPorta == "OR") C.setPorta("OR",idPorta,numInputsPorta,idInputPorta);
-    else if(tipoPorta == "NO") C.setPorta("NO",idPorta,numInputsPorta,idInputPorta);
-    else if(tipoPorta == "XO") C.setPorta("XO",idPorta,numInputsPorta,idInputPorta);
-    else if(tipoPorta == "NX") C.setPorta("NX",idPorta,numInputsPorta,idInputPorta);
+    if(tipoPorta == "NT") C->setPorta("NT",idPorta,numInputsPorta,idInputPorta);
+    else if(tipoPorta == "AN") C->setPorta("AN",idPorta,numInputsPorta,idInputPorta);
+    else if(tipoPorta == "NA") C->setPorta("NA",idPorta,numInputsPorta,idInputPorta);
+    else if(tipoPorta == "OR") C->setPorta("OR",idPorta,numInputsPorta,idInputPorta);
+    else if(tipoPorta == "NO") C->setPorta("NO",idPorta,numInputsPorta,idInputPorta);
+    else if(tipoPorta == "XO") C->setPorta("XO",idPorta,numInputsPorta,idInputPorta);
+    else if(tipoPorta == "NX") C->setPorta("NX",idPorta,numInputsPorta,idInputPorta);
 
 
     // Depois de alterado, deve ser reexibida a porta correspondente

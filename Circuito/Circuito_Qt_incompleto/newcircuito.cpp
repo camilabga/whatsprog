@@ -28,12 +28,15 @@ void NewCircuito::on_NewCircuito_accepted()
 
     // O circuito deve ser criado usando a funcao apropriada da classe Circuito
 
-    //Circuito temp(numInputs,numOutputs,numPortas);
-    //C = temp;
+    Circuito temp(numInputs,numOutputs,numPortas);
+    //C = &temp->clone();
+
+    /*
     C.limpar();
     C.setNin(numInputs);
     C.setNout(numOutputs);
     C.setNportas(numPortas);
+*/
 
     // Provisoriamente, estamos apenas exibindo uma msg
 /*    QMessageBox msgBox;
