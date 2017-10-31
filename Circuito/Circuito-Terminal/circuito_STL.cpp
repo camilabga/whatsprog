@@ -672,8 +672,14 @@ void Circuito::gerarTabela(void){
         for(unsigned k=0;k<Nin;k++)
             cout<<inputs[k]<<"\t";
         cout<<"|\t";
-        for(unsigned j=0;j<Nout;j++)
-            cout<<portas[j]->getSaida()<<"\t";
+        for(unsigned j=0;j<Nout;j++){
+            if (id_out[j] < 0) {
+                cout<<inputs[id_out[j]*-1]<<"\t";
+            } else {
+                cout<<portas[id_out[j]-1]->getSaida()<<"\t";
+            }
+        }
+            
         
         cout<<endl;
         
@@ -693,7 +699,7 @@ void Circuito::gerarTabela(void){
 }
 
 void Circuito::salvar(const char *arq) const{
-    ofstream arquivo(arq); //,ofstream::out|ofstream::app
+    ofstream arquivo(arq); //ofstream::out|ofstream::app
     arquivo<<"CIRCUITO: "<<Nin<<" "<<Nout<<" "<<Nportas<<"\nPORTAS:\n";
     for(unsigned i = 0; i<Nportas; i++){
         arquivo<< i+1 << ") ";
