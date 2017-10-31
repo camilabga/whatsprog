@@ -181,7 +181,7 @@ class Circuito {
     ostream &imprimir(ostream &O=cout) const;
     // Salvar circuito em arquivo
     // Abre a stream e depois chama o metodo imprimir
-    void salvar(const char *) const;
+    void salvar(const char *arq) const;
     // Solicita ao usuario que digite os valores das entradas do circuito, que sao
     // as variaveis inputs[i], i de 0 a Nin-1
     void digitarEntradas();

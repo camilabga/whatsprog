@@ -10,9 +10,10 @@ int main(void){
   //C.digitarEntradas();
   //C.simular();
   //C.imprimirSaidas();
-  cerr<<"ta compilando!!!!\n";
+  //C.ler("circuito_arq_wrong/circuito_wrong1.txt");
   C.ler("teste.txt");
   C.gerarTabela();
+  C.salvar("asokaoskaoskaoskoas.txt");
   /*Circuito C;
   string nome;
   int opcao;

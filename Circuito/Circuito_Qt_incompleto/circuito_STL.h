@@ -158,7 +158,7 @@ class Circuito {
     inline int getTipo(unsigned porta){return portas[porta]->getTipo();}
     inline unsigned getNumInputs(unsigned porta) const {return portas[porta]->getNumInputs();}
 
-    void setPorta(string tipo, int idPorta, int numInputsPorta, int *idInputPorta);
+    void setPorta(string tipo, int idPorta, unsigned numInputsPorta, int *idInputPorta);
     
     // As variaveis do tipo Circuito sao sempre criadas sem nenhum dado
     // A definicao do numero de entradas, saidas e portas eh feita ao ler do teclado ou arquivo
@@ -199,5 +199,5 @@ class Circuito {
 
 inline ostream &operator<<(ostream &O, const Circuito &C) {return C.imprimir(O);}
 
-extern Circuito *C;
+extern Circuito C;
 #endif // _CIRCUITO_H_

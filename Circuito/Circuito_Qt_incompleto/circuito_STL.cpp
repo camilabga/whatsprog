@@ -691,8 +691,7 @@ void Circuito::gerarTabela(void){
     }
     while(i>=0);
 }
-/*
-void Circuito::setPorta(string tipo, int idPorta, int numInputsPorta, int *idInputPorta){
+void Circuito::setPorta(string tipo, int idPorta, unsigned numInputsPorta, int *idInputPorta){
     if(tipo == "NT"){
         Porta_NOT NT;
         portas[idPorta] = (&NT) -> clone();
@@ -737,4 +736,3 @@ void Circuito::setPorta(string tipo, int idPorta, int numInputsPorta, int *idInp
          portas[idPorta]->setId_in(i,idInputPorta[i]);
 
 }
-*/

@@ -546,7 +546,7 @@ void Circuito::ler(const char *arq){
             }
             arquivo.ignore(255, ' ');
             arquivo >> tipo;
-            cout<<"\n"<<tipo<<"\n\n";
+            cout<<"\n"<<tipo<<"\n";
             if(tipo == "NT") portas[i] = (&NT) -> clone();
             else if(tipo == "AN") portas[i] = (&AN) -> clone();
             else if(tipo == "NA") portas[i] = (&NA) -> clone();
@@ -691,6 +691,26 @@ void Circuito::gerarTabela(void){
     }
     while(i>=0);
 }
+
+void Circuito::salvar(const char *arq) const{
+    ofstream arquivo(arq); //,ofstream::out|ofstream::app
+    arquivo<<"CIRCUITO: "<<Nin<<" "<<Nout<<" "<<Nportas<<"\nPORTAS:\n";
+    for(unsigned i = 0; i<Nportas; i++){
+        arquivo<< i+1 << ") ";
+        portas[i]->imprimir(arquivo);
+        arquivo<<"\n";
+    }
+    arquivo<<"SAIDAS:\n";
+    for(unsigned i = 0; i<Nout; i++){
+        arquivo<< i+1 << ") ";
+        arquivo<<id_out[i]<<"\n";
+    }
+    arquivo.close();
+}
+
+
+
+
 /*
 void Circuito::setPorta(string tipo, int idPorta, int numInputsPorta, int *idInputPorta){
     if(tipo == "NT"){

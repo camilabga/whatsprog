@@ -78,9 +78,9 @@ void MainCircuito::redimensiona_tabelas()
 
     // Esses numeros devem ser lidos a partir de metodos de consulta da classe Circuito
     // Para fazer um teste, vamos atribuir quantidades aleatorias
-    numInputs = C->getNin();
-    numOutputs = C->getNout();
-    numPortas = C->getNportas();
+    numInputs = C.getNin();
+    numOutputs = C.getNout();
+    numPortas = C.getNportas();
 
     // ==========================================================
     // Ajusta os valores da barra de status
@@ -182,7 +182,7 @@ void MainCircuito::exibe_porta(int i){
     // Esses valores (nomePorta, numInputsPorta, idInputPorta[])
     // devem ser lidos a partir de metodos de consulta da classe Circuito
     // Para fazer um teste, vamos atribuir quantidades aleatorias
-    switch (C->getTipo(i))  {    //falha de segmentacao-------------------------------------------
+    switch (C.getTipo(i))  {    //falha de segmentacao-------------------------------------------
     case 0:
         nomePorta = "NT";
         break;
