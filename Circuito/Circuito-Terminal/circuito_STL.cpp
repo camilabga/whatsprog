@@ -556,6 +556,7 @@ void Circuito::ler(const char *arq){
             else if(tipo == "NX") portas[i] = (&NX) -> clone();  
             else cerr<<"Tipo de porta inexistentes\n";
             portas[i]->ler(arquivo);
+            i++;
         } while(i < NP);
         arquivo>>prov;
         if(prov!="SAIDAS:"){
