@@ -11,7 +11,7 @@ int main(void){
   //C.simular();
   //C.imprimirSaidas();
   //C.ler("circuito_arq_wrong/circuito_wrong1.txt");
-  C.ler("circuito_wrong1.txt");
+  C.ler("teste.txt");
   C.gerarTabela();
   C.salvar("asokaoskaoskaoskoas.txt");
   /*Circuito C;

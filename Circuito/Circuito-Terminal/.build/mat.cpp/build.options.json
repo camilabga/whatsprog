@@ -1,0 +1,10 @@
+{
+  "builtInLibrariesFolders": "/home/barbosa/Downloads/Executáveis/arduino-1.8.3/libraries",
+  "customBuildProperties": "build.warn_data_percentage=75,runtime.tools.avr-gcc.path=/home/barbosa/Downloads/Executáveis/arduino-1.8.3/hardware/tools/avr,runtime.tools.avrdude.path=/home/barbosa/Downloads/Executáveis/arduino-1.8.3/hardware/tools/avr,runtime.tools.arduinoOTA.path=/home/barbosa/Downloads/Executáveis/arduino-1.8.3/hardware/tools/avr",
+  "fqbn": "arduino:avr:uno",
+  "hardwareFolders": "/home/barbosa/Downloads/Executáveis/arduino-1.8.3/hardware",
+  "otherLibrariesFolders": "/home/barbosa/Downloads/Executáveis/arduino-1.8.3/libraries",
+  "runtime.ide.version": "10600",
+  "sketchLocation": "/home/barbosa/Documentos/CeT/2017.2/Programação Avançada/Circuito/Circuito-Terminal/mat.cpp",
+  "toolsFolders": "/home/barbosa/Downloads/Executáveis/arduino-1.8.3/tools-builder,/home/barbosa/Downloads/Executáveis/arduino-1.8.3/hardware/tools/avr"
+}
