@@ -10,8 +10,7 @@
 using namespace std;
 
 // Classe utilizada para armazenar as conversas no cliente
-class Conversa
-{
+class Conversa{
 private:
     // Correspondente (outro participante da conversa). O "meuUsuario" (ver classe DadosCliente a seguir)
     // e o "correspondente" devem ser o remetente ou o destinatario de todas as mensagens da conversa.

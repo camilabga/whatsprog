@@ -17,8 +17,7 @@ using namespace std;
 #define TIMEOUT_WHATSPROG 30
 
 // Os possiveis estados de uma mensagem
-enum MsgStatus
-{
+enum MsgStatus{
     MSG_ENVIADA=1,
     MSG_RECEBIDA=2,
     MSG_ENTREGUE=3,
@@ -27,8 +26,7 @@ enum MsgStatus
 };
 
 // Os campos que compoem uma mensagem armazenada no cliente ou no servidor
-class Mensagem
-{
+class Mensagem{
 private:
     // Identificador da mensagem
     int32_t id;
@@ -56,8 +54,7 @@ public:
     bool setStatus(MsgStatus S);
 };
 
-enum ComandoWhatsProg
-{
+enum ComandoWhatsProg{
     CMD_NEW_USER=1001,
     CMD_LOGIN_USER=1002,
     CMD_LOGIN_OK=1003,
