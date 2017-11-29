@@ -13,8 +13,7 @@ using namespace std;
 // armazena na variavel DCliente, de onde elas poderao ser
 // exibidas pela interface visual
 
-DWORD WINAPI le_msg(LPVOID lpParameter)
-{
+DWORD WINAPI le_msg(LPVOID lpParameter){
   while (s.connected()) {
     //falta_fazer();
   }
@@ -225,9 +224,12 @@ void WhatsProgMain::slotAceitaUsuario(const string &IP, const string &login,
     QMessageBox::information(this, "Login", "Usuário conectado.");
 }
 
-void WhatsProgMain::on_actionNovo_triggered()
-{
+void WhatsProgMain::on_actionNovo_triggered(){
     loginDialog->setUsuario(true);
+    /*s.connect(msg., PORTA_TESTE)
+    string usuario = loginDialog->ui->lineEditI
+    s.write_string();
+*/
 }
 
 void WhatsProgMain::on_actionConectar_triggered()
@@ -305,21 +307,18 @@ void WhatsProgMain::on_tableViewConversas_clicked(const QModelIndex &index)
     }
 }
 
-void WhatsProgMain::on_lineEditMensagem_returnPressed()
-{
+void WhatsProgMain::on_lineEditMensagem_returnPressed(){
     if (DCliente.getMeuUsuario().size() < TAM_MIN_NOME_USUARIO)
     {
         QMessageBox::warning(this, "Usuário inválido", "Usuário não definido.");
         return;
     }
-    if (DCliente.getIdConversa()<0 || DCliente.getIdConversa()>=(int)DCliente.size())
-    {
+    if (DCliente.getIdConversa()<0 || DCliente.getIdConversa()>=(int)DCliente.size()){
         QMessageBox::warning(this, "Conversa inválida", "Conversa não selecionada.");
         return;
     }
     string arg1 = ui->lineEditMensagem->text().toStdString();
-    if (arg1.size()==0 || arg1.size()>TAM_MAX_MSG)
-    {
+    if (arg1.size()==0 || arg1.size()>TAM_MAX_MSG){
         QMessageBox::warning(this, "Msg inválida", "Tamanho da mensagem inválido.");
         return;
     }

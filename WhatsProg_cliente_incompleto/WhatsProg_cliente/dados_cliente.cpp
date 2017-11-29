@@ -31,7 +31,6 @@ unsigned Conversa::getNumMsgsEntregues() const
     return numMsgsEntregues;
 }
 
-
 DadosCliente::DadosCliente():
     servidor(""),meuUsuario(""),idConversa(-1),idMensagem(0),LC()
 {
@@ -88,8 +87,7 @@ bool DadosCliente::insertConversa(const string &U)
     return true;
 }
 
-bool DadosCliente::eraseConversa(unsigned i)
-{
+bool DadosCliente::eraseConversa(unsigned i){
     if (i >= size())
     {
         return false;
@@ -97,4 +95,3 @@ bool DadosCliente::eraseConversa(unsigned i)
     LC.erase(LC.begin()+i);
     return true;
 }
-

@@ -13,8 +13,7 @@ tcp_winsocket s;
 // O identificador da thread de leitura de dados do socket
 HANDLE tHandle=NULL;
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]){
     QApplication a(argc, argv);
     WhatsProgMain w;
 
@@ -35,10 +34,8 @@ int main(int argc, char *argv[])
     s.shutdown();
 
     // Espera pelo fim da thread de recepção (máximo de TIMEOUT_WHATSPROG segundos)
-    if (tHandle != NULL)
-    {
-        if (WaitForSingleObject(tHandle, 1000*TIMEOUT_WHATSPROG) == WAIT_TIMEOUT)
-        {
+    if (tHandle != NULL)    {
+        if (WaitForSingleObject(tHandle, 1000*TIMEOUT_WHATSPROG) == WAIT_TIMEOUT){
             // A funcao WaitForSingleObject saiu por timeout
             // Encerra na força bruta a thread de recepcao, pois ela nao terminou sozinha
             TerminateThread(tHandle,0);

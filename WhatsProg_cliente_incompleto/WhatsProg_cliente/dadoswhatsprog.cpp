@@ -43,8 +43,6 @@ bool Mensagem::setTexto(const string &T)
     texto=T;
     return true;
 }
-
-
 bool Mensagem::setStatus(MsgStatus S)
 {
     if (S!=MSG_ENVIADA && S!=MSG_RECEBIDA && S!=MSG_ENTREGUE && S!=MSG_LIDA && S!=MSG_INVALIDA)
