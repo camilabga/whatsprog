@@ -32,8 +32,7 @@ cliente.
 ================================================================== */
 
 // Classe que armazena os dados que definem um cliente: login e socket
-struct Client
-{
+struct Client{
   string login;
   tcp_winsocket s;
   inline Client(): login(""), s() {}
@@ -44,11 +43,11 @@ struct Client
 typedef list<Client> list_Client;
 typedef list_Client::iterator iter_Client;
 
-#define TEMPO_MAXIMO 60  // Tempo máximo de espera em segundos
+#define TEMPO_MAXIMO 60  // Tempo mï¿½ximo de espera em segundos
 #define TEMPO_ENVIO_LOGIN 60 // 60 segundos para o cliente enviar o nome de login apos conexao
 
 //
-// Variáveis globais das 2 threads
+// Variï¿½veis globais das 2 threads
 //
 // O socket de conexoes
 tcp_winsocket_server c;
@@ -57,13 +56,12 @@ list_Client LC;
 // O flag que indica que o software deve encerrar todas as threads
 bool fim = false;
 
-// Função auxiliar para enviar mensagem para um cliente especifico (dest)
+// Funï¿½ï¿½o auxiliar para enviar mensagem para um cliente especifico (dest)
 // para o qual jah se tem um iterator que aponta para sua posicao dentro da
 // lista de clientes
 // Essa funcao deve ser chamada pela funcao envie_msg, que procurarah o
 // destinatario especifico na lista e passarah o iterator
-void envie_msg_um(const string &orig, iter_Client dest, const string &msg)
-{
+void envie_msg_um(const string &orig, iter_Client dest, const string &msg){
   WINSOCKET_STATUS iResult;
 
   // Escreve o login do remetente
@@ -85,10 +83,9 @@ void envie_msg_um(const string &orig, iter_Client dest, const string &msg)
   }
 }
 
-// Funçoo auxiliar para enviar mensagem para um cliente especifico (dest != "ALL")
+// Funï¿½oo auxiliar para enviar mensagem para um cliente especifico (dest != "ALL")
 // ou para todos os clientes (dest == "ALL")
-void envie_msg(const string &orig, const string &dest, const string &msg)
-{
+void envie_msg(const string &orig, const string &dest, const string &msg){
   iter_Client iDest;
 
   if (orig.size()<4 || orig.size()>16)
@@ -125,8 +122,7 @@ void envie_msg(const string &orig, const string &dest, const string &msg)
 }
 
 // Thread que efetivamente desempenha as tarefas do servidor
-DWORD WINAPI servidor(LPVOID lpParameter)
-{
+DWORD WINAPI servidor(LPVOID lpParameter){
   tcp_winsocket t;
   winsocket_queue f;
   WINSOCKET_STATUS iResult;
@@ -134,18 +130,14 @@ DWORD WINAPI servidor(LPVOID lpParameter)
   string usuario,msg;
   iter_Client i;
 
-  while (!fim)
-  {
+  while (!fim){
     // Inclui na fila de sockets para o select todos os sockets que eu
     // quero monitorar para ver se houve chegada de dados
     f.clean();
-    if (!(fim = !c.accepting()))
-    {
+    if (!(fim = !c.accepting())){
       f.include(c);
-      for (i=LC.begin(); i!=LC.end(); i++)
-      {
-    	  if (i->s.connected())
-    	  {
+      for (i=LC.begin(); i!=LC.end(); i++){
+    	  if (i->s.connected()){
 	        f.include(i->s);
     	  }
       }
@@ -153,26 +145,20 @@ DWORD WINAPI servidor(LPVOID lpParameter)
 
     // Espera que chegue alguma dados em qualquer dos sockets da fila
     iResult = f.wait_read(TEMPO_MAXIMO*1000);
-    if (iResult==SOCKET_ERROR)
-    {
+    if (iResult==SOCKET_ERROR){
       if (!fim) cerr << "Erro na espera por alguma atividade\n";
       fim = true;
     }
-    if (!fim)
-    {
-      if (iResult!=0)
-      {
-        // Não saiu por timeout: houve atividade em algum socket da fila
+    if (!fim){
+      if (iResult!=0){
+        // Nï¿½o saiu por timeout: houve atividade em algum socket da fila
         // Testa em qual socket houve atividade.
 
         // Primeiro, testa os sockets dos clientes
-        for (i=LC.begin(); i!=LC.end(); i++)
-        {
-          if (i->s.connected() && f.had_activity(i->s))
-          {
+        for (i=LC.begin(); i!=LC.end(); i++){
+          if (i->s.connected() && f.had_activity(i->s)){
             iResult = i->s.read_string(usuario);
-            if (iResult == SOCKET_ERROR)
-            {
+            if (iResult == SOCKET_ERROR){
               cerr << "Destinatario invalido (" << usuario << ") recebido do cliente " << i->login << ". Desconectando\n";
               i->s.shutdown();
             }
@@ -194,40 +180,29 @@ DWORD WINAPI servidor(LPVOID lpParameter)
         }
 
         // Depois, esta se houve atividade no socket de conexao
-        if (f.had_activity(c))
-        {
-          if (c.accept(t) != SOCKET_OK)
-          {
-            cerr << "Não foi possível estabelecer uma conexao\n";
+        if (f.had_activity(c)){
+          if (c.accept(t) != SOCKET_OK){
+            cerr << "Nï¿½o foi possï¿½vel estabelecer uma conexao\n";
             fim = true;
           }
-          if (!fim)
-          {
+          if (!fim){
             // Leh o nome de usuario do cliente
             iResult = t.read_string(usuario,TEMPO_ENVIO_LOGIN*1000);
-            if (iResult == SOCKET_ERROR)
-            {
+            if (iResult == SOCKET_ERROR){
               cerr << "Erro na leitura do nome de login de um cliente que se conectou.\n";
               t.close();
-            }
-            else
-            {
-              if (usuario.size()<4 || usuario.size()>16)
-              {
+            } else {
+              if (usuario.size()<4 || usuario.size()>16){
                 cerr << "Nome de login (" << usuario << ") invalido.\n";
                 t.close();
-              }
-              else
-              {
+              } else {
                 // Procura se jah existe um cliente conectado com o mesmo login
                 i = find(LC.begin(), LC.end(), usuario);
-                if (i != LC.end())
-                {
+                
+                if (i != LC.end()) {
                   cerr << "Nome de login (" << usuario << ") jah utilizado.\n";
                   t.close();
-                }
-                else
-                {
+                } else {
                   Client novo;
                   novo.login = usuario;
                   novo.s = t;
@@ -238,12 +213,9 @@ DWORD WINAPI servidor(LPVOID lpParameter)
             }
           }
         }
-      }
-      else
-      {
-        // Saiu poe timeout: não houve atividade em nenhum socket da fila
-        if (LC.empty())
-        {
+      } else {
+        // Saiu poe timeout: nï¿½o houve atividade em nenhum socket da fila
+        if (LC.empty()) {
           cout << "Servidor inativo hah " << TEMPO_MAXIMO << " segundos...\n";
         }
       }
@@ -251,10 +223,8 @@ DWORD WINAPI servidor(LPVOID lpParameter)
       // Depois de testar a chegada de dados em todos os sockets,
       // elimina da lista de sockets as conexoes que foram fechadas porque houve
       // falha na comunicacao ou porque se desligaram
-      for (i=LC.begin(); i!=LC.end(); i++)
-      {
-        while ( i!=LC.end() && !(i->s.connected()) )
-        {
+      for (i=LC.begin(); i!=LC.end(); i++) {
+        while ( i!=LC.end() && !(i->s.connected()) ) {
           i->s.close();
           i = LC.erase(i);
         }
@@ -264,8 +234,7 @@ DWORD WINAPI servidor(LPVOID lpParameter)
   return 0;
 }
 
-int main(void)
-{
+int main(void){
   WSADATA wsaData;
   string msg;
 
@@ -279,7 +248,7 @@ int main(void)
   }
 
   if (c.listen(PORTA_TESTE) != SOCKET_OK) {
-    cerr << "Não foi possível abrir o socket de controle\n";
+    cerr << "Nï¿½o foi possï¿½vel abrir o socket de controle\n";
     exit(1);
   }
 
@@ -287,15 +256,13 @@ int main(void)
   HANDLE tHandle = CreateThread(NULL, 0, servidor, NULL , 0, NULL);
   if (tHandle == NULL)
   {
-    cerr << "Problema na criação da thread: " << GetLastError() << endl;
+    cerr << "Problema na criaï¿½ï¿½o da thread: " << GetLastError() << endl;
     exit(1);
   }
 
 
-  while (!fim)
-  {
-    do
-    {
+  while (!fim){
+    do{
       cout << "Mensagem para todos os clientes [max " << TAM_MAX_MSG_STRING << " caracteres, FIM para terminar]: ";
       cin >> ws;
       getline(cin,msg);
@@ -310,16 +277,15 @@ int main(void)
   // Desliga os sockets
   cout << "Encerrando o socket de conexoes\n";
   c.shutdown();
-  for (iter_Client i=LC.begin(); i!=LC.end(); i++)
-  {
+  for (iter_Client i=LC.begin(); i!=LC.end(); i++){
     cout << "Encerrando o socket do cliente " << i->login << endl;
     i->s.shutdown();
   }
-  // Espera pelo fim da thread do servidor (máximo de 5 segundos)
+  // Espera pelo fim da thread do servidor (mï¿½ximo de 5 segundos)
   cout << "Aguardando o encerramento da outra thread...\n";
   WaitForSingleObject(tHandle, 5000);
-  // Encerra na "força bruta" a thread do servidor caso ela não tenha terminado sozinha
-  // (ou seja, a função WaitForSingleObject tenha saído por timeout)
+  // Encerra na "forï¿½a bruta" a thread do servidor caso ela nï¿½o tenha terminado sozinha
+  // (ou seja, a funï¿½ï¿½o WaitForSingleObject tenha saï¿½do por timeout)
   TerminateThread(tHandle,0);
   // Encerra o handle da thread
   CloseHandle(tHandle);

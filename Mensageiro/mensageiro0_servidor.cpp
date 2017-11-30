@@ -8,18 +8,17 @@
 using namespace std;
 
 #define NUM_MAX_CONEX 30
-#define TEMPO_MAXIMO 60  // Tempo máximo de espera em segundos
+#define TEMPO_MAXIMO 60  // Tempo mï¿½ximo de espera em segundos
 
-// Variáveis globais das 2 threads
+// Variï¿½veis globais das 2 threads
 // Os sockets dos clientes
 tcp_winsocket_server c;
 tcp_winsocket s[NUM_MAX_CONEX];
 int nconex=0;
 bool fim = false;
 
-// Função auxiliar para enviar mensagem para todos os clientes
-void envie_msg(int orig, string msg)
-{
+// Funï¿½ï¿½o auxiliar para enviar mensagem para todos os clientes
+void envie_msg(int orig, string msg){
   WINSOCKET_STATUS iResult;
 
   for (int i=0; i<nconex; i++) if (i!=orig && s[i].connected()) {
@@ -44,8 +43,7 @@ void envie_msg(int orig, string msg)
 }
 
 // Thread que efetivamente desempenha as tarefas do servidor
-DWORD WINAPI servidor(LPVOID lpParameter)
-{
+DWORD WINAPI servidor(LPVOID lpParameter){
   tcp_winsocket t;
   winsocket_queue f;
   WINSOCKET_STATUS iResult;
@@ -81,7 +79,7 @@ DWORD WINAPI servidor(LPVOID lpParameter)
     {
       if (iResult!=0)
       {
-        // Não saiu por timeout: houve atividade em algum socket da fila
+        // Nï¿½o saiu por timeout: houve atividade em algum socket da fila
         // Testa em qual socket houve atividade. Primeiro os sockets dos clientes
         for (i=0; i<nconex; i++)
         {
@@ -112,20 +110,20 @@ DWORD WINAPI servidor(LPVOID lpParameter)
         {
             if (c.accept(t) == SOCKET_OK)
             {
-                cout << "Recebido novo pedido de conexão\n";
+                cout << "Recebido novo pedido de conexï¿½o\n";
             }
             else
             {
-                cerr << "Não foi possível estabelecer uma conexão\n";
+                cerr << "Nï¿½o foi possï¿½vel estabelecer uma conexï¿½o\n";
                 fim = true;
             }
             if (!fim) {
                 if (nconex >= NUM_MAX_CONEX) {
-                    cout << "Número máximo de conexões atingido: conexão rejeitada\n";
+                    cout << "Nï¿½mero mï¿½ximo de conexï¿½es atingido: conexï¿½o rejeitada\n";
                     t.close();
                 }
                 else {
-                    // Aloca próximo socket livre para o novo cliente
+                    // Aloca prï¿½ximo socket livre para o novo cliente
                     s[nconex] = t;
                     cout << "Cliente " << i << " conectado no socket "
                          << s[nconex] << endl;
@@ -136,9 +134,9 @@ DWORD WINAPI servidor(LPVOID lpParameter)
       }
       else
       {
-        // Saiu poe timeout: não houve atividade em nenhum socket da fila
+        // Saiu poe timeout: nï¿½o houve atividade em nenhum socket da fila
         if (nconex == 0) {
-            //cout << "Servidor inativo há muito tempo...\n";
+            //cout << "Servidor inativo hï¿½ muito tempo...\n";
         }
       }
       // Elimina da lista de sockets as conexoes que foram fechadas porque houve
@@ -159,8 +157,7 @@ DWORD WINAPI servidor(LPVOID lpParameter)
   return 0;
 }
 
-int main(void)
-{
+int main(void){
   WSADATA wsaData;
   string msg;
 
@@ -174,7 +171,7 @@ int main(void)
   }
 
   if (c.listen(PORTA_TESTE,NUM_MAX_CONEX) != SOCKET_OK) {
-    cerr << "Não foi possível abrir o socket de controle\n";
+    cerr << "Nï¿½o foi possï¿½vel abrir o socket de controle\n";
     exit(1);
   }
 
@@ -182,14 +179,12 @@ int main(void)
   HANDLE tHandle = CreateThread(NULL, 0, servidor, NULL , 0, NULL);
   if (tHandle == NULL)
   {
-    cerr << "Problema na criação da thread: " << GetLastError() << endl;
+    cerr << "Problema na criaï¿½ï¿½o da thread: " << GetLastError() << endl;
     exit(1);
   }
-
-
+  
   while (!fim) {
-    do
-    {
+    do{
       cout << "Mensagem para todos os clientes [max " << TAM_MAX_MSG_STRING << " caracteres, FIM para terminar]: ";
       cin >> ws;
       getline(cin,msg);
@@ -206,11 +201,11 @@ int main(void)
     cout << "Encerrando o socket do cliente " << i << endl;
       s[i].shutdown();
   }
-  // Espera pelo fim da thread do servidor (máximo de 5 segundos)
+  // Espera pelo fim da thread do servidor (mï¿½ximo de 5 segundos)
   cout << "Aguardando o encerramento da outra thread...\n";
   WaitForSingleObject(tHandle, 5000);
-  // Encerra na "força bruta" a thread do servidor caso ela não tenha terminado sozinha
-  // (ou seja, a função WaitForSingleObject tenha saído por timeout)
+  // Encerra na "forï¿½a bruta" a thread do servidor caso ela nï¿½o tenha terminado sozinha
+  // (ou seja, a funï¿½ï¿½o WaitForSingleObject tenha saï¿½do por timeout)
   TerminateThread(tHandle,0);
   // Encerra o handle da thread
   CloseHandle(tHandle);

@@ -7,14 +7,16 @@
 using namespace std;
 
 // Numero de bytes das informacoes a serem enviadas
-#define TAM_MIN_NOME_USUARIO 6
-#define TAM_MAX_NOME_USUARIO 12
-#define TAM_MIN_SENHA 6
-#define TAM_MAX_SENHA 12
-#define TAM_MAX_MSG 255
+#define SIZE_MIN_LOGIN_USER 6
+#define SIZE_MAX_LOGIN_USER 12
+#define SIZE_MIN_PASSWORD 6
+#define SIZE_MAX_PASSWORD 12
+#define SIZE_MAX_MSG 255
 
 // Timeout (em segundos) para esperar o envio de um dado obrigatorio pelo socket
 #define TIMEOUT_WHATSPROG 30
+
+#define DOOR "23456"
 
 // Os possiveis estados de uma mensagem
 enum MsgStatus{
