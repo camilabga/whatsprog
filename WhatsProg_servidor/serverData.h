@@ -54,4 +54,6 @@ public:
     void checkConnectedClients();
     bool acceptSocket();
 
+    void sendCmd(CommandWhatsProg cmd, tcp_winsocket socket);
+
 };

@@ -81,6 +81,15 @@ bool Server::acceptSocket(){
     }
 }
 
+void Server::sendCmd(CommandWhatsProg cmd, tcp_winsocket socket){
+    WINSOCKET_STATUS iResult;
+    iResult = socket.write_int(cmd);
+    if ( iResult == SOCKET_ERROR ) {
+        cerr << "Problema ao enviar mensagem para o cliente " << endl;
+        socket.shutdown();
+    }
+}
+
 bool Server::isUserRepeated(User u){
     for (list<User>::iterator it=users.begin(); it != users.end(); ++it)
         if ((*it).getLogin().compare(u.getLogin()) == 0) return true;
@@ -94,12 +103,13 @@ bool Server::newUser(string login, string password, tcp_winsocket socket){
     u.setPassword(password);
 
     if (isUserRepeated(u) || !u.isLoginValid() || !u.isPasswordValid()){
-        //envia mensagem erro
+        sendCmd(CMD_LOGIN_INVALIDO, socket);
         return false;
     }
 
     u.setSocket(socket);
     users.push_back(u);
+    sendCmd(CMD_LOGIN_OK, socket);
     return true;
 }
 
@@ -118,5 +128,3 @@ bool User::isPasswordValid(){
 
     return true;
 }
-
-
