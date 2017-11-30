@@ -9,6 +9,7 @@
 using namespace std;
 
 #define MAX_TIME 60
+#define TIME_SEND_LOGIN 60
 
 class User{
     private:
@@ -47,7 +48,7 @@ public:
 
     void statusThread(HANDLE tHandle);
 
-    bool newUser(string login, string password);
+    bool newUser(string login, string password, tcp_winsocket);
     bool isUserRepeated(User u);
 
     void checkConnectedClients();

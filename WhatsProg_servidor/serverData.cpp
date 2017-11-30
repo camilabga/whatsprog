@@ -43,13 +43,40 @@ void Server::checkConnectedClients(){
 }
 
 bool Server::acceptSocket(){
+    WINSOCKET_STATUS iResult;
+    int32_t cmd;
+    string login, password;
     tcp_winsocket temp_socket;
     if (connected_sockets.had_activity(server_socket)){
         if (server_socket.accept(temp_socket) != SOCKET_OK){
-            cerr << "N�o foi poss�vel estabelecer uma conexao\n";
+            cerr << "Nao foi possivel estabelecer uma conexao\n";
             return false;
         } else {
-            cout << "alguem conectou" << endl;
+            iResult = temp_socket.read_int(cmd,TIME_SEND_LOGIN*1000);
+            if (iResult == SOCKET_ERROR){
+              cerr << "Erro na leitura do nome de login de um cliente que se conectou.\n";
+              temp_socket.close();
+            } else {
+                iResult = temp_socket.read_string(login,TIME_SEND_LOGIN*1000);
+                if (iResult == SOCKET_ERROR){
+                    cerr << "Erro na leitura do login de um cliente que se conectou.\n";
+                    temp_socket.close();
+                }
+
+                iResult = temp_socket.read_string(password,TIME_SEND_LOGIN*1000);
+                if (iResult == SOCKET_ERROR){
+                    cerr << "Erro na leitura da senha de um cliente que se conectou.\n";
+                    temp_socket.close();
+                }
+
+                if (cmd == CMD_NEW_USER) {
+                    newUser(login, password, temp_socket);
+                } else if (cmd == CMD_LOGIN_USER) {
+                    
+                } else {
+                    cout << "nera p ta aq n migo" << endl;
+                }
+            }
         }
     }
 }
@@ -60,7 +87,7 @@ bool Server::isUserRepeated(User u){
     return false;
 }
 
-bool Server::newUser(string login, string password){
+bool Server::newUser(string login, string password, tcp_winsocket socket){
     User u;
 
     u.setLogin(login);
@@ -71,7 +98,7 @@ bool Server::newUser(string login, string password){
         return false;
     }
 
-    // envia mensagem de ok
+    u.setSocket(socket);
     users.push_back(u);
     return true;
 }
