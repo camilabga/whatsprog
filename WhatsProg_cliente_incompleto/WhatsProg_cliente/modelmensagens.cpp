@@ -188,8 +188,7 @@ QVariant ModelMensagens::data(const QModelIndex &index, int role) const{
     return QVariant();
 }
 
-void ModelMensagens::slotAtualizaMensagens()
-{
+void ModelMensagens::slotAtualizaMensagens(){
     // Avisa que os dados da lista de mensagens vao mudar
     beginResetModel();
     // Avisa que todos os dados do modelo de mensagens devem ser lidos novamente

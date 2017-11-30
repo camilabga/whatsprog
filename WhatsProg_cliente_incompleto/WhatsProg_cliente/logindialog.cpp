@@ -2,6 +2,7 @@
 #include "ui_logindialog.h"
 #include "dadoswhatsprog.h"
 #include "dados_cliente.h"
+#include "winsocket.h"
 #include <iostream>
 
 LoginDialog::LoginDialog(QWidget *parent) :
@@ -37,18 +38,28 @@ void LoginDialog::on_buttonBox_accepted()
     emit aceitaUsuario( IP, login, senha, novoUsuario );
 }
 void LoginDialog::aceitaUsuario(const string &IP, const string &login, const string &senha, bool novoUsuario){
-
+    string msg;
+    bool usuario_ok =0;
+    WINSOCKET_STATUS iResult;
     if(novoUsuario){
-        s.connect(IP.c_str(), "23456");
+        if(!s.connected())    //<
+            s.connect(IP.c_str(), "23456");
         s.write_int(CMD_NEW_USER);
-        s.write_string(login);
-        s.write_string(senha);
     }
     else{
+        if(!s.connected())
+            s.connect(IP.c_str(), "23456");
         s.write_int(CMD_LOGIN_USER);
-        s.write_string(IP);
-        s.write_string(login);
-        s.write_string(senha);
+    }
+    s.write_string(login);
+    s.write_string(senha);
+    int32_t iMsg=1;
+    if(!s.connected())
+        iResult = s.read_int(iMsg);
+    if(iMsg == CMD_LOGIN_OK){
+
+
     }
 
+        //OK (mensagem?)
 }

@@ -114,8 +114,7 @@ void ModelConversas::slotAtualizaConversas()
     endResetModel();
 }
 
-void ModelConversas::slotAtualizaNumMsgConversa(unsigned I)
-{
+void ModelConversas::slotAtualizaNumMsgConversa(unsigned I){
     QModelIndex topLeft = index(I,0);
     emit dataChanged(topLeft, topLeft);
 }

@@ -226,10 +226,6 @@ void WhatsProgMain::slotAceitaUsuario(const string &IP, const string &login,
 
 void WhatsProgMain::on_actionNovo_triggered(){
     loginDialog->setUsuario(true);
-    /*s.connect(msg., PORTA_TESTE)
-    string usuario = loginDialog->ui->lineEditI
-    s.write_string();
-*/
 }
 
 void WhatsProgMain::on_actionConectar_triggered()
@@ -240,10 +236,8 @@ void WhatsProgMain::on_actionConectar_triggered()
 // Desconecta o socket, encerra a thread de leitura de dados,
 // limpa o servidor e usuario atuais, limpa todas as conversas,
 // redesenha todas as janelas
-void WhatsProgMain::on_actionDesconectar_triggered()
-{
-    if (s.connected())
-    {
+void WhatsProgMain::on_actionDesconectar_triggered(){
+    if (s.connected()){
         // Envia o comando de logout
         s.write_int(CMD_LOGOUT_USER);
         // Fecha o socket e, consequentemente,
