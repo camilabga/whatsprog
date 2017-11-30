@@ -6,6 +6,7 @@ Server server;
 tcp_winsocket_server server_socket;
 
 DWORD WINAPI server_brain(LPVOID lpParameter){
+    cout << "Server Online" << endl;
     while (1) {
         server.checkConnectedClients();
         server.acceptSocket();

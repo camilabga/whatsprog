@@ -26,6 +26,7 @@ class User{
         inline void setLogin(const string &l){login = l;}
         inline void setPassword(const string s){password = s;}
         inline string getLogin(){return login;}
+        inline string getPassword(){return password;}
 
         inline tcp_winsocket getSocket(){return s;}
         inline void setSocket(tcp_winsocket s){this->s = s;}
@@ -48,8 +49,9 @@ public:
 
     void statusThread(HANDLE tHandle);
 
-    bool newUser(string login, string password, tcp_winsocket);
+    bool newUser(string login, string password, tcp_winsocket socket);
     bool isUserRepeated(User u);
+    bool loginUser(string login, string password, tcp_winsocket socket);
 
     void checkConnectedClients();
     bool acceptSocket();

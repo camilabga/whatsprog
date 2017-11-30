@@ -26,10 +26,10 @@ void Server::checkConnectedClients(){
     connected_sockets.clean();
     if (server_socket.accepting()){
         connected_sockets.include(server_socket);
-        cout << "prestou" << endl;
+        //cout << "prestou" << endl;
         for (list<User>::iterator it=users.begin(); it != users.end(); ++it){
             if ((*it).getSocket().connected()){
-                cout << "+1 client" << endl;
+               // cout << (*it).getLogin() << " connected" << endl;
                 connected_sockets.include((*it).getSocket());
             }
         }
@@ -70,9 +70,11 @@ bool Server::acceptSocket(){
                 }
 
                 if (cmd == CMD_NEW_USER) {
+                    cout << login << " " << password << endl;
                     newUser(login, password, temp_socket);
                 } else if (cmd == CMD_LOGIN_USER) {
-                    
+                    cout << login << " " << password << endl;
+                    loginUser(login, password, temp_socket);
                 } else {
                     cout << "nera p ta aq n migo" << endl;
                 }
@@ -109,8 +111,23 @@ bool Server::newUser(string login, string password, tcp_winsocket socket){
 
     u.setSocket(socket);
     users.push_back(u);
+    cout << "+1 user" << endl;
     sendCmd(CMD_LOGIN_OK, socket);
     return true;
+}
+
+bool Server::loginUser(string login, string password, tcp_winsocket socket){
+    cout << "tentando logar" << endl;
+    for (list<User>::iterator it=users.begin(); it != users.end(); ++it){
+        if ((*it).getLogin().compare(login) + (*it).getPassword().compare(password) == 0) {
+            sendCmd(CMD_LOGIN_OK, socket);
+            cout << login << " logou" << endl;
+            return true;
+        }
+    }
+
+    sendCmd(CMD_LOGIN_INVALIDO, socket);
+    return false;
 }
 
 // User Functions
