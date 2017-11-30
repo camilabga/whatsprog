@@ -8,6 +8,8 @@
 
 using namespace std;
 
+#define MAX_TIME 60
+
 class User{
     private:
         string login;
@@ -23,6 +25,11 @@ class User{
         inline void setLogin(const string &l){login = l;}
         inline void setPassword(const string s){password = s;}
         inline string getLogin(){return login;}
+
+        inline tcp_winsocket getSocket(){return s;}
+        inline void setSocket(tcp_winsocket s){this->s = s;}
+
+        
 };
 
 class Server{
@@ -30,11 +37,20 @@ private:
     list<User> users;
     list<Message> buffer;
 
+    tcp_winsocket_server server_socket;
+    winsocket_queue connected_sockets;
+
+    
+
 public:
-    void openConnection(WINSOCKET_STATUS iResult, tcp_winsocket_server server_socket);
+    void openConnection(WINSOCKET_STATUS iResult);
 
     void statusThread(HANDLE tHandle);
 
     bool newUser(string login, string password);
     bool isUserRepeated(User u);
+
+    void checkConnectedClients();
+    bool acceptSocket();
+
 };
