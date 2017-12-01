@@ -74,6 +74,7 @@ bool Server::acceptSocket(){
                 } else if (cmd == CMD_LOGIN_USER) {
                     cout << login << " " << password << endl;
                     loginUser(login, password, temp_socket);
+                    //checar se tem msg no buffer
                 } else {
                     cout << "nera p ta aq n migo" << endl;
                 }
@@ -83,9 +84,7 @@ bool Server::acceptSocket(){
 }
 
 void Server::waitingActivity(){
-    int32_t cmd, param1;
-    string param2, param3;
-    Message message;
+    int32_t cmd;
     for (list<User>::iterator it=users.begin(); it != users.end(); ++it){
         if ((*it).getSocket().connected() && connected_sockets.had_activity((*it).getSocket())){
 
@@ -97,61 +96,14 @@ void Server::waitingActivity(){
             } else {
                 switch (cmd) {
                     case CMD_NOVA_MSG:
-                        iResult = (*it).getSocket().read_int(param1, TIME_SEND_LOGIN*1000);
-                        
-                        if (iResult == SOCKET_ERROR){
-                            cerr << "Erro na comunicacao \n";
-                            (*it).getSocket().shutdown();
-                        } else{
-                            iResult = (*it).getSocket().read_string(param2, TIME_SEND_LOGIN*1000);
-                            
-                            if (iResult == SOCKET_ERROR){
-                                cerr << "Erro na comunicacao \n";
-                                (*it).getSocket().shutdown();
-                            } else {
-                                iResult = (*it).getSocket().read_string(param3, TIME_SEND_LOGIN*1000);
-                                if (iResult == SOCKET_ERROR){
-                                    cerr << "Erro na comunicacao \n";
-                                    (*it).getSocket().shutdown();
-                                } else {
-                                    if (message.setSender((*it).getLogin())) {
-                                        if (message.setId(param1)) {
-                                            // verificar se id é válido
-                                        } else {
-                                            // messagem erro
-                                        }
-
-                                        if (message.setReceiver(param2)) {
-                                            // verificar se user existe
-
-                                            // verificar se user ta on
-                                        } else {
-                                            // mensagem erro
-                                        }
-
-                                        if (!message.setText(param3)) {
-                                            // mensagem erro
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    
+                        cmd_new_msg((*it));                    
                     break;
 
                     case CMD_MSG_RECEBIDA:
 
                     break;
 
-                    case CMD_MSG_ENTREGUE:
-
-                    break;
-
                     case CMD_MSG_LIDA1:
-
-                    break;
-
-                    case CMD_MSG_LIDA2:
 
                     break;
 
@@ -170,6 +122,83 @@ void Server::sendCmd(CommandWhatsProg cmd, tcp_winsocket socket){
         cerr << "Problema ao enviar mensagem para o cliente " << endl;
         socket.shutdown();
     }
+}
+
+void Server::sendCmd(CommandWhatsProg cmd, int32_t param1, tcp_winsocket socket){
+    iResult = socket.write_int(cmd);
+    if ( iResult == SOCKET_ERROR ) {
+        cerr << "Problema ao enviar mensagem para o cliente " << endl;
+        socket.shutdown();
+    } else {
+        iResult = socket.write_int(param1);
+
+        if ( iResult == SOCKET_ERROR ) {
+            cerr << "Problema ao enviar mensagem para o cliente " << endl;
+            socket.shutdown();
+        }
+    }
+}
+
+void Server::cmd_new_msg(User user) {
+    int32_t param1;
+    string param2, param3;
+    Message message;
+    iResult = user.getSocket().read_int(param1, TIME_SEND_LOGIN*1000);
+
+    if (iResult == SOCKET_ERROR){
+        cerr << "Erro na comunicacao \n";
+        user.getSocket().shutdown();
+    } else{
+        iResult = user.getSocket().read_string(param2, TIME_SEND_LOGIN*1000);
+        
+        if (iResult == SOCKET_ERROR){
+            cerr << "Erro na comunicacao \n";
+            user.getSocket().shutdown();
+        } else {
+            iResult = user.getSocket().read_string(param3, TIME_SEND_LOGIN*1000);
+            if (iResult == SOCKET_ERROR){
+                cerr << "Erro na comunicacao \n";
+                user.getSocket().shutdown();
+            } else {
+                if (message.setSender(user.getLogin())) {
+                    if (message.setId(param1)) {
+                        // verificar se id é válido
+                            //iterar buffer de mensagens desse determinado usuario 
+                                    //checando se tem id igual
+
+                        if (message.setReceiver(param2)) {
+                            // verificar se user existe
+                                // iterar lista de users checando se tem um igual
+
+                            if (message.setText(param3)) {
+                                // verificar se user ta on
+                                // se sim, enviar msg 
+
+                            } else {
+                                sendCmd(CMD_MSG_INVALIDA, param1, user.getSocket());
+                            }
+
+                        } else {
+                            sendCmd(CMD_USER_INVALIDO, param1, user.getSocket());
+                        }
+                        
+                    } else {
+                        sendCmd(CMD_ID_INVALIDA, param1, user.getSocket());
+                    }
+                } else {
+                    user.getSocket().shutdown();
+                }
+            }
+        }
+    }
+}
+
+void Server::cmd_msg_received(User user){
+    
+}
+
+void Server::cmd_msg_read(User user){
+
 }
 
 bool Server::isUserRepeated(User u){
