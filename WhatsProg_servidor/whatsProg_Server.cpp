@@ -25,15 +25,12 @@ int main () {
     server.statusThread(tHandle);
 
     while (1) {
-        //if (server.newUser("barbosa", "172723")) cout << "inseriu 1" << endl;
-        //if (server.newUser("vantuil", "172723")) cout << "inseriu 2" << endl;
-        //if (server.newUser("barbosa", "172723")) cout << "inseriu 3" << endl;
-        //if (server.newUser("mpsdantas", "123456")) cout << "inseriu 4" << endl;
+
     }
 
     TerminateThread(tHandle,0);
     CloseHandle(tHandle);
-    //server_socket.close();
+    server_socket.close();
 
     return 0;
 }

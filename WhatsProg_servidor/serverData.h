@@ -1,3 +1,6 @@
+#ifndef SERVER_DATA_H
+#define SERVER_DATA_H
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -31,7 +34,7 @@ class User{
         inline tcp_winsocket getSocket(){return s;}
         inline void setSocket(tcp_winsocket s){this->s = s;}
 
-        
+
 };
 
 class Server{
@@ -42,10 +45,10 @@ private:
     tcp_winsocket_server server_socket;
     winsocket_queue connected_sockets;
 
-    
+    WINSOCKET_STATUS iResult;
 
 public:
-    void openConnection(WINSOCKET_STATUS iResult);
+    void openConnection(WINSOCKET_STATUS iR);
 
     void statusThread(HANDLE tHandle);
 
@@ -55,7 +58,10 @@ public:
 
     void checkConnectedClients();
     bool acceptSocket();
+    void waitingActivity();
 
     void sendCmd(CommandWhatsProg cmd, tcp_winsocket socket);
 
 };
+
+#endif // SERVER_DATA_H

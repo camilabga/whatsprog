@@ -1,9 +1,9 @@
 #include "serverData.h"
 
 // Server Functions
-void Server::openConnection(WINSOCKET_STATUS iResult){
-    if (iResult != 0) {
-        cerr << "WSAStartup failed: " << iResult << endl;
+void Server::openConnection(WINSOCKET_STATUS iR){
+    if (iR != 0) {
+        cerr << "WSAStartup failed: " << iR << endl;
         exit(1);
     }
 
@@ -21,8 +21,6 @@ void Server::statusThread(HANDLE tHandle){
 }
 
 void Server::checkConnectedClients(){
-    WINSOCKET_STATUS iResult;
-
     connected_sockets.clean();
     if (server_socket.accepting()){
         connected_sockets.include(server_socket);
@@ -37,7 +35,7 @@ void Server::checkConnectedClients(){
         }
     }
 
-    iResult = connected_sockets.wait_read(MAX_TIME*1000);
+    WINSOCKET_STATUS iResult = connected_sockets.wait_read(MAX_TIME*1000);
     if (iResult==SOCKET_ERROR){
         cerr << "Erro na espera por alguma atividade\n";
         exit(1);
@@ -45,7 +43,6 @@ void Server::checkConnectedClients(){
 }
 
 bool Server::acceptSocket(){
-    WINSOCKET_STATUS iResult;
     int32_t cmd;
     string login, password;
     tcp_winsocket temp_socket;
@@ -56,7 +53,7 @@ bool Server::acceptSocket(){
         } else {
             iResult = temp_socket.read_int(cmd,TIME_SEND_LOGIN*1000);
             if (iResult == SOCKET_ERROR){
-              cerr << "Erro na leitura do nome de login de um cliente que se conectou.\n";
+              cerr << "Erro na leitura do codigo.\n";
               temp_socket.close();
             } else {
                 iResult = temp_socket.read_string(login,TIME_SEND_LOGIN*1000);
@@ -85,8 +82,89 @@ bool Server::acceptSocket(){
     }
 }
 
+void Server::waitingActivity(){
+    int32_t cmd, param1;
+    string param2, param3;
+    Message message;
+    for (list<User>::iterator it=users.begin(); it != users.end(); ++it){
+        if ((*it).getSocket().connected() && connected_sockets.had_activity((*it).getSocket())){
+
+            iResult = (*it).getSocket().read_int(cmd, TIME_SEND_LOGIN*1000);
+
+            if (iResult == SOCKET_ERROR){
+                cerr << "Erro na comunicacao \n";
+                (*it).getSocket().shutdown();
+            } else {
+                switch (cmd) {
+                    case CMD_NOVA_MSG:
+                        iResult = (*it).getSocket().read_int(param1, TIME_SEND_LOGIN*1000);
+                        
+                        if (iResult == SOCKET_ERROR){
+                            cerr << "Erro na comunicacao \n";
+                            (*it).getSocket().shutdown();
+                        } else{
+                            iResult = (*it).getSocket().read_string(param2, TIME_SEND_LOGIN*1000);
+                            
+                            if (iResult == SOCKET_ERROR){
+                                cerr << "Erro na comunicacao \n";
+                                (*it).getSocket().shutdown();
+                            } else {
+                                iResult = (*it).getSocket().read_string(param3, TIME_SEND_LOGIN*1000);
+                                if (iResult == SOCKET_ERROR){
+                                    cerr << "Erro na comunicacao \n";
+                                    (*it).getSocket().shutdown();
+                                } else {
+                                    if (message.setSender((*it).getLogin())) {
+                                        if (message.setId(param1)) {
+                                            // verificar se id é válido
+                                        } else {
+                                            // messagem erro
+                                        }
+
+                                        if (message.setReceiver(param2)) {
+                                            // verificar se user existe
+
+                                            // verificar se user ta on
+                                        } else {
+                                            // mensagem erro
+                                        }
+
+                                        if (!message.setText(param3)) {
+                                            // mensagem erro
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    
+                    break;
+
+                    case CMD_MSG_RECEBIDA:
+
+                    break;
+
+                    case CMD_MSG_ENTREGUE:
+
+                    break;
+
+                    case CMD_MSG_LIDA1:
+
+                    break;
+
+                    case CMD_MSG_LIDA2:
+
+                    break;
+
+                    default:
+
+                    break;
+                }
+            }
+        }
+    }
+}
+
 void Server::sendCmd(CommandWhatsProg cmd, tcp_winsocket socket){
-    WINSOCKET_STATUS iResult;
     iResult = socket.write_int(cmd);
     if ( iResult == SOCKET_ERROR ) {
         cerr << "Problema ao enviar mensagem para o cliente " << endl;

@@ -29,7 +29,7 @@ bool Message::setReceiver(const string &D){
 }
 
 bool Message::setText(const string &T){
-    if (T.size()==0){
+    if (T.size()==0 || T.size() > 255){
         text = "";
         return false;
     }
