@@ -31,6 +31,8 @@ void Server::checkConnectedClients(){
             if ((*it).getSocket().connected()){
                // cout << (*it).getLogin() << " connected" << endl;
                 connected_sockets.include((*it).getSocket());
+            } else {
+                (*it).getSocket().close();
             }
         }
     }
