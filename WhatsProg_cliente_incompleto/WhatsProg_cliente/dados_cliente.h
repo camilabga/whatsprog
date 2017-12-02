@@ -50,6 +50,9 @@ private:
     uint32_t idMensagem;
     // Todas as conversas
     vector<Conversa> LC;
+
+    string senha; //gambiarra
+
 public:
     DadosCliente();
     // Funcoes de consulta dos dados principais (servidor, login do usuario)
@@ -78,6 +81,8 @@ public:
     // As funcoes de alteracao retornam false em caso de erro, true se OK
     inline int getIdConversa() const {return idConversa;}
     bool setIdConversa(int ID);
+    inline void setTUDO(string IP,string nome,string senha){servidor=IP; meuUsuario= nome; senha= this->senha;}//gambiarra
+    inline string getSenha() const {return senha;}      //gambiarra
 };
 
 // Os dados das conversas do cliente serao armazenados em uma variavel global
@@ -88,5 +93,4 @@ extern tcp_winsocket s;
 
 // O identificador da thread de leitura de dados do socket
 extern HANDLE tHandle;
-
 #endif // DADOS_CLIENTE_H

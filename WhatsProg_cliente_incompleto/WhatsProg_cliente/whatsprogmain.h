@@ -18,7 +18,7 @@ class WhatsProgMain : public QMainWindow
 public:
     explicit WhatsProgMain(QWidget *parent = 0);
     ~WhatsProgMain();
-
+    void warning2(const QString janela, const QString msg);
 private slots:
     void slotAtualizaBarraStatus();
     void slotAceitaUsuario(const string &IP, const string &login, const string &senha, bool novoUsuario );
@@ -29,6 +29,8 @@ private slots:
     void on_tableViewConversas_activated(const QModelIndex &index);
     void on_tableViewConversas_clicked(const QModelIndex &index);
     void on_lineEditMensagem_returnPressed();
+
+    void on_actionNova_conversa_triggered();
 
 signals:
     void conversasModificada();
@@ -48,4 +50,7 @@ private:
 
     LoginDialog *loginDialog;
 };
+
+//extern WhatsProgMain w;
+
 #endif // WHATSPROGMAIN_H

@@ -55,7 +55,7 @@ int ModelConversas::rowCount(const QModelIndex &parent) const
         return 0;
 
     // FEITO POR MIM:
-    return DCliente.size();
+    return 5;//DCliente.size();
 }
 
 int ModelConversas::columnCount(const QModelIndex &parent) const
