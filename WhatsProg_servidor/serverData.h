@@ -62,6 +62,7 @@ public:
 
     void sendCmd(CommandWhatsProg cmd, tcp_winsocket socket);
     void sendCmd(CommandWhatsProg cmd, int32_t param1, tcp_winsocket socket);
+    bool sendCmd(CommandWhatsProg cmd, int32_t param1, string param2, string param3, tcp_winsocket socket);
 
     void cmd_new_msg(User user);
     void cmd_msg_read1(User user);

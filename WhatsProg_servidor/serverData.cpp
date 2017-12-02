@@ -135,6 +135,39 @@ void Server::sendCmd(CommandWhatsProg cmd, int32_t param1, tcp_winsocket socket)
     }
 }
 
+bool Server::sendCmd(CommandWhatsProg cmd, int32_t param1, string param2, string param3, tcp_winsocket socket){
+    iResult = socket.write_int(cmd);
+    if ( iResult == SOCKET_ERROR ) {
+        cerr << "Problema ao enviar mensagem para o cliente " << endl;
+        socket.shutdown();
+    } else {
+        iResult = socket.write_int(param1);
+
+        if ( iResult == SOCKET_ERROR ) {
+            cerr << "Problema ao enviar mensagem para o cliente " << endl;
+            socket.shutdown();
+        } else {
+            iResult = socket.write_string(param2);
+
+            if ( iResult == SOCKET_ERROR ) {
+                cerr << "Problema ao enviar mensagem para o cliente " << endl;
+                socket.shutdown();
+            } else {
+                iResult = socket.write_string(param3);
+
+                if ( iResult == SOCKET_ERROR ) {
+                    cerr << "Problema ao enviar mensagem para o cliente " << endl;
+                    socket.shutdown();
+                } else {
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
 void Server::cmd_new_msg(User user) {
     int32_t param1;
     string param2, param3;
@@ -168,21 +201,32 @@ void Server::cmd_new_msg(User user) {
                         }
 
                         if (message.setReceiver(param2)) {
-                            // verificar se user existe
-                                // iterar lista de users checando se tem um igual
+                            for (list<User>::iterator a=users.begin(); a != users.end(); ++a) {
+                                if ((*a).getLogin().compare(param2) == 0) {
+                                    if (message.setText(param3)) {
+                                        message.setStatus(MSG_RECEBIDA);
 
-                            if (message.setText(param3)) {
-                                message.setStatus(MSG_ENVIADA);
+                                        sendCmd(CMD_MSG_RECEBIDA, param1, user.getSocket());
 
-                                sendCmd(CMD_MSG_RECEBIDA, param1, user.getSocket());
+                                        buffer.push_back(message);
 
-                                //armazenar a mensagem no buffer
-                                // verificar se user ta on
-                                // se sim, enviar msg
+                                        if((*a).getSocket().connected()){
+                                            if (sendCmd(CMD_NOVA_MSG, param1, param2, param3, (*a).getSocket())) {
+                                                message.setStatus(MSG_ENTREGUE);
+                                                sendCmd(CMD_MSG_ENTREGUE, param1, user.getSocket());
+                                            } else {
+                                                return ;
+                                            }
+                                        }
 
-                            } else {
-                                sendCmd(CMD_MSG_INVALIDA, param1, user.getSocket());
+                                    } else {
+                                        sendCmd(CMD_MSG_INVALIDA, param1, user.getSocket());
+                                        return ;
+                                    }
+                                }
                             }
+
+                            sendCmd(CMD_USER_INVALIDO, param1, user.getSocket());
 
                         } else {
                             sendCmd(CMD_USER_INVALIDO, param1, user.getSocket());
