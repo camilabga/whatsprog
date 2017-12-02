@@ -217,7 +217,11 @@ void Server::cmd_msg_read1(User user){
 
                         for (list<User>::iterator a=users.begin(); a != users.end(); ++a) {
                             if ((*a).getLogin().compare(param2) == 0){
-                                sendCmd(CMD_MSG_LIDA2, param1, (*a).getSocket());
+                                if((*a).getSocket().connected()){
+                                    sendCmd(CMD_MSG_LIDA2, param1, (*a).getSocket());
+                                    buffer.erase(it);
+                                    return ;
+                                }
                             }
                         }
                     }
