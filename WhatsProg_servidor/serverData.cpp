@@ -27,7 +27,7 @@ void Server::checkConnectedClients(){
         //cout << "prestou" << endl;
         for (list<User>::iterator it=users.begin(); it != users.end(); ++it){
             if ((*it).getSocket().connected()){
-               // cout << (*it).getLogin() << " connected" << endl;
+               cout << (*it).getLogin() << " connected" << endl;
                 connected_sockets.include((*it).getSocket());
             } else {
                 (*it).getSocket().close();
@@ -104,7 +104,7 @@ void Server::waitingActivity(){
                     break;
 
                     case CMD_LOGOUT_USER:
-
+                        (*it).getSocket().shutdown();
                     break;
 
                     default:
