@@ -6,19 +6,13 @@
 #include "modelmensagens.h"
 #include "dados_cliente.h"
 #include "socket_whatsprog.h"
+#include <windows.h>
 
 using namespace std;
 
 // Esta é a thread que recebe as informacoes do socket e
 // armazena na variavel DCliente, de onde elas poderao ser
 // exibidas pela interface visual
-
-DWORD WINAPI le_msg(LPVOID lpParameter){
-  while (s.connected()) {
-    //falta_fazer();
-  }
-  return 0;
-}
 
 WhatsProgMain::WhatsProgMain(QWidget *parent) :
     QMainWindow(parent),
@@ -49,34 +43,28 @@ WhatsProgMain::WhatsProgMain(QWidget *parent) :
 
     // A barra de status
     statusBar()->insertWidget(0,new QLabel("SERVIDOR: "));
-    if (DCliente.getServidor() == "")
-    {
+    if (DCliente.getServidor() == ""){
         ipServidor = new QLabel("---");
     }
-    else
-    {
+    else{
         ipServidor = new QLabel(DCliente.getServidor().c_str());
     }
     statusBar()->insertWidget(1,ipServidor);
 
     statusBar()->insertWidget(2,new QLabel("   USUÁRIO: "));
-    if (DCliente.getMeuUsuario() == "")
-    {
+    if (DCliente.getMeuUsuario() == ""){
         nomeUsuario = new QLabel("---");
     }
-    else
-    {
+    else{
         nomeUsuario = new QLabel(DCliente.getMeuUsuario().c_str());
     }
     statusBar()->insertWidget(3,nomeUsuario);
 
     statusBar()->insertWidget(4,new QLabel("   CONVERSA: "));
-    if (DCliente.getIdConversa() < 0)
-    {
+    if (DCliente.getIdConversa() < 0){
         nomeConversa = new QLabel("---");
     }
-    else
-    {
+    else{
         nomeConversa = new QLabel(DCliente[DCliente.getIdConversa()].getCorrespondente().c_str());
     }
     statusBar()->insertWidget(5,nomeConversa);
@@ -93,7 +81,6 @@ WhatsProgMain::WhatsProgMain(QWidget *parent) :
             modelMensagens, SLOT (slotAtualizaMensagens()));
     connect(this, SIGNAL (statusModificada()),
             this, SLOT (slotAtualizaBarraStatus()));
-
     connect(loginDialog, SIGNAL (aceitaUsuario(const string, const string, const string, bool)),
             this, SLOT (slotAceitaUsuario(const string, const string, const string, bool)));
 }
@@ -133,9 +120,12 @@ void WhatsProgMain::slotAtualizaBarraStatus()
     }
 }
 
+void WhatsProgMain::warning2(const QString janela, const QString msg){QMessageBox::warning(this, janela, msg);}
+
 void WhatsProgMain::slotAceitaUsuario(const string &IP, const string &login,
                                       const string &senha, bool novoUsuario )
 {
+    cerr<<"slotAceita\n";
     if (IP == "")
     {
         QMessageBox::warning(this, "Login", "IP inválido.");
@@ -172,8 +162,7 @@ void WhatsProgMain::slotAceitaUsuario(const string &IP, const string &login,
 
     // Envia a msg de conexao para o servidor, atraves do socket
     bool conexaoOK = true;
-    if (novoUsuario)
-    {
+    if (novoUsuario) {
         // Testa se eh possivel cadastrar um novo usuario com esses ip, login e senha
         // Envia o comando CMD_NEW_USER
         if (conexaoOK) conexaoOK = (s.write_int(CMD_NEW_USER) != SOCKET_ERROR);
@@ -196,17 +185,15 @@ void WhatsProgMain::slotAceitaUsuario(const string &IP, const string &login,
     int32_t cmd;
     conexaoOK = (s.read_int(cmd,1000*TIMEOUT_WHATSPROG) != sizeof(cmd));
     if (conexaoOK) conexaoOK = (cmd == CMD_LOGIN_OK);
-    if (!conexaoOK)
-    {
+    if (!conexaoOK){
         QMessageBox::warning(this, "Erro de conexão", "Erro na leitura da resposta à conexão.");
         return;
     }
 
     // Lanca a thread de leitura dos dados do socket
     // Cria a thread que escreve as mensagens recebidas
-    tHandle = CreateThread(NULL, 0, le_msg, NULL , 0, NULL);
-    if (tHandle == NULL)
-    {
+  //  tHandle = CreateThread(NULL, 0, le_msg, NULL , 0, NULL);// //////////////////////////////////////////////////////
+    if (tHandle == NULL){
         s.close();
         QMessageBox::warning(this, "Erro de conexão", "Erro na criação da thread de leitura do socket.");
         return;
@@ -226,11 +213,15 @@ void WhatsProgMain::slotAceitaUsuario(const string &IP, const string &login,
 
 void WhatsProgMain::on_actionNovo_triggered(){
     loginDialog->setUsuario(true);
+    if(s.connected())
+        slotAceitaUsuario(DCliente.getServidor(),DCliente.getMeuUsuario(),DCliente.getSenha(),true);
 }
 
 void WhatsProgMain::on_actionConectar_triggered()
 {
     loginDialog->setUsuario(false);
+    //if(s.connected())
+        slotAceitaUsuario(DCliente.getServidor(),DCliente.getMeuUsuario(),DCliente.getSenha(),false);
 }
 
 // Desconecta o socket, encerra a thread de leitura de dados,
@@ -254,8 +245,7 @@ void WhatsProgMain::on_actionDesconectar_triggered(){
     emit statusModificada();
 }
 
-void WhatsProgMain::on_actionSair_triggered()
-{
+void WhatsProgMain::on_actionSair_triggered(){
     QCoreApplication::quit();
 }
 
@@ -264,8 +254,7 @@ void WhatsProgMain::on_tableViewConversas_activated(const QModelIndex &index)
     on_tableViewConversas_clicked(index);
 }
 
-void WhatsProgMain::on_tableViewConversas_clicked(const QModelIndex &index)
-{
+void WhatsProgMain::on_tableViewConversas_clicked(const QModelIndex &index){
     if (index.row() >= (int)DCliente.size())
     {
         cerr << "ID de conversa invalida.\n";
@@ -340,4 +329,9 @@ void WhatsProgMain::on_lineEditMensagem_returnPressed(){
     emit numMsgConversaModificado(DCliente.getIdConversa());
     // Sinaliza que houve alteracao na janela de Mensagens
     emit mensagensModificada();
+}
+
+void WhatsProgMain::on_actionNova_conversa_triggered(){
+    loginDialog = new LoginDialog(this);
+
 }

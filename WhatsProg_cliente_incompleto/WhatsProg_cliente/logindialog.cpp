@@ -24,8 +24,11 @@ void LoginDialog::setUsuario(bool NovoUsuario){
     novoUsuario = NovoUsuario;
     setWindowTitle(novoUsuario ? "Usuário - Criar" : "Usuário - Conectar");
     ui->lineEditIpServidor->clear();
+    ui->lineEditIpServidor->setText("192.168.0.23");
     ui->lineEditNomeUsuario->clear();
     ui->lineEditSenhaUsuario->clear();
+    ui->lineEditNomeUsuario->setText("gabriel");
+    ui->lineEditSenhaUsuario->setText("gabriel");
     show();
 }
 
@@ -39,10 +42,8 @@ void LoginDialog::on_buttonBox_accepted()
 }
 void LoginDialog::aceitaUsuario(const string &IP, const string &login, const string &senha, bool novoUsuario){
     string msg;
-    bool usuario_ok =0;
-    WINSOCKET_STATUS iResult;
     if(novoUsuario){
-        if(!s.connected())    //<
+        if(!s.connected())
             s.connect(IP.c_str(), "23456");
         s.write_int(CMD_NEW_USER);
     }
@@ -53,13 +54,19 @@ void LoginDialog::aceitaUsuario(const string &IP, const string &login, const str
     }
     s.write_string(login);
     s.write_string(senha);
-    int32_t iMsg=1;
+
+    //DCliente.setTUDO(IP,login,senha);
+
+
+
+    /*int32_t iMsg=1;
     if(!s.connected())
         iResult = s.read_int(iMsg);
     if(iMsg == CMD_LOGIN_OK){
 
 
     }
-
+*/
+    //slotAceitaUsuario(IP, login, senha, novoUsuario);
         //OK (mensagem?)
 }
