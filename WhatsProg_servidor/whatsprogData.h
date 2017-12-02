@@ -54,6 +54,7 @@ class Message{
         bool setText(const string &T);
         inline MsgStatus getStatus() const {return status;}
         bool setStatus(MsgStatus S);
+
 };
 
 enum CommandWhatsProg{
