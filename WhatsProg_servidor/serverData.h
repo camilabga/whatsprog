@@ -59,6 +59,7 @@ public:
     void checkConnectedClients();
     bool acceptSocket();
     void waitingActivity();
+    void checkBuffer(User user);
 
     void sendCmd(CommandWhatsProg cmd, tcp_winsocket socket);
     void sendCmd(CommandWhatsProg cmd, int32_t param1, tcp_winsocket socket);

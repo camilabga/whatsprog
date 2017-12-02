@@ -103,8 +103,12 @@ void Server::waitingActivity(){
                         cmd_msg_read1((*it));
                     break;
 
-                    default:
+                    case CMD_LOGOUT_USER:
 
+                    break;
+
+                    default:
+                        (*it).getSocket().shutdown();
                     break;
                 }
             }
@@ -166,6 +170,19 @@ bool Server::sendCmd(CommandWhatsProg cmd, int32_t param1, string param2, string
     }
 
     return false;
+}
+
+void Server::checkBuffer(User user){
+    for (list<Message>::iterator it=buffer.begin(); it != buffer.end(); ++it) {
+        if ((*it).getReceiver().compare(user.getLogin()) == 0){
+            if ((*it).getStatus() == MSG_RECEBIDA) {
+                if (sendCmd(CMD_NOVA_MSG, (*it).getId(), user.getLogin(), (*it).getText(), user.getSocket())) {
+                    (*it).setStatus(MSG_ENTREGUE);
+                    sendCmd(CMD_MSG_ENTREGUE, (*it).getId(), user.getSocket());
+                }
+            }
+        }
+    }
 }
 
 void Server::cmd_new_msg(User user) {
@@ -313,7 +330,9 @@ bool Server::loginUser(string login, string password, tcp_winsocket socket){
     for (list<User>::iterator it=users.begin(); it != users.end(); ++it){
         if ((*it).getLogin().compare(login) + (*it).getPassword().compare(password) == 0) {
             sendCmd(CMD_LOGIN_OK, socket);
-            cout << login << " logou" << endl;
+            
+            // chama funcoes de checar buffer
+
             return true;
         }
     }
