@@ -11,8 +11,8 @@
 
 using namespace std;
 
-#define MAX_TIME 60
-#define TIME_SEND_LOGIN 60
+#define MAX_TIME 1000
+#define TIME_SEND_LOGIN 1000
 
 class User{
     private:
@@ -40,6 +40,8 @@ class User{
 class Server{
 private:
     list<User> users;
+    list<User> clients;
+
     list<Message> buffer;
 
     tcp_winsocket_server server_socket;

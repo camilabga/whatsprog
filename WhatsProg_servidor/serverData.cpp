@@ -24,21 +24,22 @@ void Server::checkConnectedClients(){
     connected_sockets.clean();
     if (server_socket.accepting()){
         connected_sockets.include(server_socket);
-        //cout << "prestou" << endl;
-        for (list<User>::iterator it=users.begin(); it != users.end(); ++it){
+        cout << "prestou" << endl;
+        for (list<User>::iterator it=clients.begin(); it != clients.end(); ++it){
             if ((*it).getSocket().connected()){
-               // cout << (*it).getLogin() << " connected" << endl;
+               cout << (*it).getLogin() << " connected" << endl;
                 connected_sockets.include((*it).getSocket());
             } else {
                 (*it).getSocket().close();
             }
         }
+    } else {
+        cout << "n ta aceitando" << endl;
     }
 
-    WINSOCKET_STATUS iResult = connected_sockets.wait_read(MAX_TIME*1000);
+    WINSOCKET_STATUS iResult = connected_sockets.wait_read(MAX_TIME);
     if (iResult==SOCKET_ERROR){
         cerr << "Erro na espera por alguma atividade\n";
-        exit(1);
     }
 }
 
@@ -51,18 +52,18 @@ bool Server::acceptSocket(){
             cerr << "Nao foi possivel estabelecer uma conexao\n";
             return false;
         } else {
-            iResult = temp_socket.read_int(cmd,TIME_SEND_LOGIN*1000);
+            iResult = temp_socket.read_int(cmd,TIME_SEND_LOGIN);
             if (iResult == SOCKET_ERROR){
               cerr << "Erro na leitura do codigo.\n";
               temp_socket.close();
             } else {
-                iResult = temp_socket.read_string(login,TIME_SEND_LOGIN*1000);
+                iResult = temp_socket.read_string(login,TIME_SEND_LOGIN);
                 if (iResult == SOCKET_ERROR){
                     cerr << "Erro na leitura do login de um cliente que se conectou.\n";
                     temp_socket.close();
                 }
 
-                iResult = temp_socket.read_string(password,TIME_SEND_LOGIN*1000);
+                iResult = temp_socket.read_string(password,TIME_SEND_LOGIN);
                 if (iResult == SOCKET_ERROR){
                     cerr << "Erro na leitura da senha de um cliente que se conectou.\n";
                     temp_socket.close();
@@ -85,14 +86,15 @@ bool Server::acceptSocket(){
 
 void Server::waitingActivity(){
     int32_t cmd;
-    for (list<User>::iterator it=users.begin(); it != users.end(); ++it){
+    for (list<User>::iterator it=clients.begin(); it != clients.end(); ++it){
+        cout << "ta nesse loo infitino" << endl;
         if ((*it).getSocket().connected() && connected_sockets.had_activity((*it).getSocket())){
-
-            iResult = (*it).getSocket().read_int(cmd, TIME_SEND_LOGIN*1000);
+            iResult = (*it).getSocket().read_int(cmd, TIME_SEND_LOGIN);
 
             if (iResult == SOCKET_ERROR){
-                cerr << "Erro na comunicacao \n";
-                (*it).getSocket().shutdown();
+                cerr << "Erro na comunicacao aq \n";
+                (*it).getSocket().close();
+                break;
             } else {
                 switch (cmd) {
                     case CMD_NOVA_MSG:
@@ -104,11 +106,13 @@ void Server::waitingActivity(){
                     break;
 
                     case CMD_LOGOUT_USER:
-
+                        
+                        cout << "deslogou" << endl;
+                        clients.erase(it);
                     break;
 
                     default:
-                        (*it).getSocket().shutdown();
+                        (*it).getSocket().close();
                     break;
                 }
             }
@@ -120,7 +124,7 @@ void Server::sendCmd(CommandWhatsProg cmd, tcp_winsocket socket){
     iResult = socket.write_int(cmd);
     if ( iResult == SOCKET_ERROR ) {
         cerr << "Problema ao enviar mensagem para o cliente " << endl;
-        socket.shutdown();
+        socket.close();
     }
 }
 
@@ -128,13 +132,13 @@ void Server::sendCmd(CommandWhatsProg cmd, int32_t param1, tcp_winsocket socket)
     iResult = socket.write_int(cmd);
     if ( iResult == SOCKET_ERROR ) {
         cerr << "Problema ao enviar mensagem para o cliente " << endl;
-        socket.shutdown();
+        socket.close();
     } else {
         iResult = socket.write_int(param1);
 
         if ( iResult == SOCKET_ERROR ) {
             cerr << "Problema ao enviar mensagem para o cliente " << endl;
-            socket.shutdown();
+            socket.close();
         }
     }
 }
@@ -143,25 +147,25 @@ bool Server::sendCmd(CommandWhatsProg cmd, int32_t param1, string param2, string
     iResult = socket.write_int(cmd);
     if ( iResult == SOCKET_ERROR ) {
         cerr << "Problema ao enviar mensagem para o cliente " << endl;
-        socket.shutdown();
+        socket.close();
     } else {
         iResult = socket.write_int(param1);
 
         if ( iResult == SOCKET_ERROR ) {
             cerr << "Problema ao enviar mensagem para o cliente " << endl;
-            socket.shutdown();
+            socket.close();
         } else {
             iResult = socket.write_string(param2);
 
             if ( iResult == SOCKET_ERROR ) {
                 cerr << "Problema ao enviar mensagem para o cliente " << endl;
-                socket.shutdown();
+                socket.close();
             } else {
                 iResult = socket.write_string(param3);
 
                 if ( iResult == SOCKET_ERROR ) {
                     cerr << "Problema ao enviar mensagem para o cliente " << endl;
-                    socket.shutdown();
+                    socket.close();
                 } else {
                     return true;
                 }
@@ -189,22 +193,22 @@ void Server::cmd_new_msg(User user) {
     int32_t param1;
     string param2, param3;
     Message message;
-    iResult = user.getSocket().read_int(param1, TIME_SEND_LOGIN*1000);
+    iResult = user.getSocket().read_int(param1, TIME_SEND_LOGIN);
 
     if (iResult == SOCKET_ERROR){
         cerr << "Erro na comunicacao \n";
-        user.getSocket().shutdown();
+        user.getSocket().close();
     } else{
-        iResult = user.getSocket().read_string(param2, TIME_SEND_LOGIN*1000);
+        iResult = user.getSocket().read_string(param2, TIME_SEND_LOGIN);
         
         if (iResult == SOCKET_ERROR){
             cerr << "Erro na comunicacao \n";
-            user.getSocket().shutdown();
+            user.getSocket().close();
         } else {
-            iResult = user.getSocket().read_string(param3, TIME_SEND_LOGIN*1000);
+            iResult = user.getSocket().read_string(param3, TIME_SEND_LOGIN);
             if (iResult == SOCKET_ERROR){
                 cerr << "Erro na comunicacao \n";
-                user.getSocket().shutdown();
+                user.getSocket().close();
             } else {
                 if (message.setSender(user.getLogin())) {
                     if (message.setId(param1)) {
@@ -253,7 +257,7 @@ void Server::cmd_new_msg(User user) {
                         sendCmd(CMD_ID_INVALIDA, param1, user.getSocket());
                     }
                 } else {
-                    user.getSocket().shutdown();
+                    user.getSocket().close();
                 }
             }
         }
@@ -264,17 +268,17 @@ void Server::cmd_msg_read1(User user){
     int32_t param1;
     string param2;
     
-    iResult = user.getSocket().read_int(param1, TIME_SEND_LOGIN*1000);
+    iResult = user.getSocket().read_int(param1, TIME_SEND_LOGIN);
 
     if (iResult == SOCKET_ERROR){
         cerr << "Erro na comunicacao \n";
-        user.getSocket().shutdown();
+        user.getSocket().close();
     } else {
-        iResult = user.getSocket().read_string(param2, TIME_SEND_LOGIN*1000);
+        iResult = user.getSocket().read_string(param2, TIME_SEND_LOGIN);
         
         if (iResult == SOCKET_ERROR){
             cerr << "Erro na comunicacao \n";
-            user.getSocket().shutdown();
+            user.getSocket().close();
         } else {
             for (list<Message>::iterator it=buffer.begin(); it != buffer.end(); ++it) {
                 if((*it).getSender().compare(param2) == 0){
@@ -294,7 +298,7 @@ void Server::cmd_msg_read1(User user){
                 }
             }
 
-            user.getSocket().shutdown();
+            user.getSocket().close();
 
         }
     }
@@ -319,6 +323,7 @@ bool Server::newUser(string login, string password, tcp_winsocket socket){
     }
 
     u.setSocket(socket);
+    clients.push_back(u);
     users.push_back(u);
     cout << "+1 user" << endl;
     sendCmd(CMD_LOGIN_OK, socket);
@@ -331,7 +336,9 @@ bool Server::loginUser(string login, string password, tcp_winsocket socket){
         if ((*it).getLogin().compare(login) + (*it).getPassword().compare(password) == 0) {
             sendCmd(CMD_LOGIN_OK, socket);
             
-            // chama funcoes de checar buffer
+            clients.push_back((*it));
+
+            checkBuffer((*it));
 
             return true;
         }
