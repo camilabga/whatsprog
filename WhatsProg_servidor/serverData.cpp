@@ -158,9 +158,14 @@ void Server::cmd_new_msg(User user) {
             } else {
                 if (message.setSender(user.getLogin())) {
                     if (message.setId(param1)) {
-                        // verificar se id é válido
-                            //iterar buffer de mensagens desse determinado usuario 
-                                    //checando se tem id igual
+                        for (list<Message>::iterator it=buffer.begin(); it != buffer.end(); ++it) {
+                            if ((*it).getSender().compare(user.getLogin()) == 0) {
+                                if ((*it).getId() == param1) {
+                                    sendCmd(CMD_ID_INVALIDA, param1, user.getSocket());
+                                    return ;
+                                }
+                            }
+                        }
 
                         if (message.setReceiver(param2)) {
                             // verificar se user existe
