@@ -99,12 +99,8 @@ void Server::waitingActivity(){
                         cmd_new_msg((*it));                    
                     break;
 
-                    case CMD_MSG_RECEBIDA:
-
-                    break;
-
                     case CMD_MSG_LIDA1:
-
+                        cmd_msg_read1((*it));
                     break;
 
                     default:
@@ -171,8 +167,13 @@ void Server::cmd_new_msg(User user) {
                                 // iterar lista de users checando se tem um igual
 
                             if (message.setText(param3)) {
+                                message.setStatus(MSG_ENVIADA);
+
+                                sendCmd(CMD_MSG_RECEBIDA, param1, user.getSocket());
+
+                                //armazenar a mensagem no buffer
                                 // verificar se user ta on
-                                // se sim, enviar msg 
+                                // se sim, enviar msg
 
                             } else {
                                 sendCmd(CMD_MSG_INVALIDA, param1, user.getSocket());
@@ -193,11 +194,40 @@ void Server::cmd_new_msg(User user) {
     }
 }
 
-void Server::cmd_msg_received(User user){
+void Server::cmd_msg_read1(User user){
+    int32_t param1;
+    string param2;
     
-}
+    iResult = user.getSocket().read_int(param1, TIME_SEND_LOGIN*1000);
 
-void Server::cmd_msg_read(User user){
+    if (iResult == SOCKET_ERROR){
+        cerr << "Erro na comunicacao \n";
+        user.getSocket().shutdown();
+    } else {
+        iResult = user.getSocket().read_string(param2, TIME_SEND_LOGIN*1000);
+        
+        if (iResult == SOCKET_ERROR){
+            cerr << "Erro na comunicacao \n";
+            user.getSocket().shutdown();
+        } else {
+            for (list<Message>::iterator it=buffer.begin(); it != buffer.end(); ++it) {
+                if((*it).getSender().compare(param2) == 0){
+                    if ((*it).getId() == param1){
+                        (*it).setStatus(MSG_LIDA);
+
+                        for (list<User>::iterator a=users.begin(); a != users.end(); ++a) {
+                            if ((*a).getLogin().compare(param2) == 0){
+                                sendCmd(CMD_MSG_LIDA2, param1, (*a).getSocket());
+                            }
+                        }
+                    }
+                }
+            }
+
+            user.getSocket().shutdown();
+
+        }
+    }
 
 }
 

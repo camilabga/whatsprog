@@ -64,8 +64,7 @@ public:
     void sendCmd(CommandWhatsProg cmd, int32_t param1, tcp_winsocket socket);
 
     void cmd_new_msg(User user);
-    void cmd_msg_received(User user);
-    void cmd_msg_read(User user);
+    void cmd_msg_read1(User user);
 };
 
 #endif // SERVER_DATA_H
