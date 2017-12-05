@@ -11,15 +11,14 @@
 
 using namespace std;
 
-#define MAX_TIME 60
-#define TIME_SEND_LOGIN 60
+#define MAX_TIME 100
+#define TIME_SEND_LOGIN 100
 
 class User{
     private:
         string login;
         string password;
         tcp_winsocket s;
-        list <Message> conversations; // organizar por remetente
 
     public:
         inline User(): login(""),password(""), s() {}
@@ -31,8 +30,8 @@ class User{
         inline string getLogin(){return login;}
         inline string getPassword(){return password;}
 
-        inline tcp_winsocket getSocket(){return s;}
-        inline void setSocket(tcp_winsocket s){this->s = s;}
+        inline tcp_winsocket& getSocket(){return s;}
+        inline void setSocket(const tcp_winsocket &s){this->s = s;}
 
 
 };
@@ -54,21 +53,21 @@ public:
 
     void statusThread(HANDLE tHandle);
 
-    bool newUser(string login, string password, tcp_winsocket socket);
-    bool isUserRepeated(User u);
-    bool loginUser(string login, string password, tcp_winsocket socket);
+    bool newUser(string login, string password, tcp_winsocket &socket);
+    bool isUserRepeated(User &u);
+    bool loginUser(string login, string password, tcp_winsocket &socket);
 
     void checkConnectedClients();
     bool acceptSocket();
     void waitingActivity();
-    void checkBuffer(User user);
+    void checkBuffer(User &user);
 
-    void sendCmd(CommandWhatsProg cmd, tcp_winsocket socket);
-    void sendCmd(CommandWhatsProg cmd, int32_t param1, tcp_winsocket socket);
-    bool sendCmd(CommandWhatsProg cmd, int32_t param1, string param2, string param3, tcp_winsocket socket);
+    void sendCmd(CommandWhatsProg cmd, tcp_winsocket &socket);
+    void sendCmd(CommandWhatsProg cmd, int32_t param1, tcp_winsocket &socket);
+    bool sendCmd(CommandWhatsProg cmd, int32_t param1, string param2, string param3, tcp_winsocket &socket);
 
-    void cmd_new_msg(User user);
-    void cmd_msg_read1(User user);
+    void cmd_new_msg(User &user);
+    void cmd_msg_read1(User &user);
 };
 
 #endif // SERVER_DATA_H
