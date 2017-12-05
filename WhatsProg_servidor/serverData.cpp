@@ -24,7 +24,6 @@ void Server::checkConnectedClients(){
     connected_sockets.clean();
     if (server_socket.accepting()){
         connected_sockets.include(server_socket);
-        cout << "prestou" << endl;
         for (list<User>::iterator it=clients.begin(); it != clients.end(); ++it){
             if ((*it).getSocket().connected()){
                cout << (*it).getLogin() << " connected" << endl;
@@ -33,11 +32,9 @@ void Server::checkConnectedClients(){
                 (*it).getSocket().close();
             }
         }
-    } else {
-        cout << "n ta aceitando" << endl;
     }
 
-    WINSOCKET_STATUS iResult = connected_sockets.wait_read(MAX_TIME);
+    WINSOCKET_STATUS iResult = connected_sockets.wait_read(MAX_TIME*1000);
     if (iResult==SOCKET_ERROR){
         cerr << "Erro na espera por alguma atividade\n";
     }
@@ -87,18 +84,13 @@ bool Server::acceptSocket(){
 void Server::waitingActivity(){
     int32_t cmd;
     for (list<User>::iterator it=clients.begin(); it != clients.end(); ++it){
-        cout << "ta nesse loo infitino" << endl;
         if ((*it).getSocket().connected() && connected_sockets.had_activity((*it).getSocket())){
             iResult = (*it).getSocket().read_int(cmd, TIME_SEND_LOGIN);
 
-            if (iResult == SOCKET_ERROR){
-                cerr << "Erro na comunicacao aq \n";
-                (*it).getSocket().close();
-                break;
-            } else {
+            if (iResult != SOCKET_ERROR){
                 switch (cmd) {
                     case CMD_NOVA_MSG:
-                        cmd_new_msg((*it));                    
+                        cmd_new_msg((*it));
                     break;
 
                     case CMD_MSG_LIDA1:
@@ -106,9 +98,9 @@ void Server::waitingActivity(){
                     break;
 
                     case CMD_LOGOUT_USER:
-                        
-                        cout << "deslogou" << endl;
-                        clients.erase(it);
+                        (*it).getSocket().close();
+                        cout << (*it).getLogin() << " logout" << endl;
+                        it = clients.erase(it);
                     break;
 
                     default:
@@ -200,7 +192,7 @@ void Server::cmd_new_msg(User user) {
         user.getSocket().close();
     } else{
         iResult = user.getSocket().read_string(param2, TIME_SEND_LOGIN);
-        
+
         if (iResult == SOCKET_ERROR){
             cerr << "Erro na comunicacao \n";
             user.getSocket().close();
@@ -252,7 +244,7 @@ void Server::cmd_new_msg(User user) {
                         } else {
                             sendCmd(CMD_USER_INVALIDO, param1, user.getSocket());
                         }
-                        
+
                     } else {
                         sendCmd(CMD_ID_INVALIDA, param1, user.getSocket());
                     }
@@ -267,7 +259,7 @@ void Server::cmd_new_msg(User user) {
 void Server::cmd_msg_read1(User user){
     int32_t param1;
     string param2;
-    
+
     iResult = user.getSocket().read_int(param1, TIME_SEND_LOGIN);
 
     if (iResult == SOCKET_ERROR){
@@ -275,7 +267,7 @@ void Server::cmd_msg_read1(User user){
         user.getSocket().close();
     } else {
         iResult = user.getSocket().read_string(param2, TIME_SEND_LOGIN);
-        
+
         if (iResult == SOCKET_ERROR){
             cerr << "Erro na comunicacao \n";
             user.getSocket().close();
@@ -335,10 +327,10 @@ bool Server::loginUser(string login, string password, tcp_winsocket socket){
     for (list<User>::iterator it=users.begin(); it != users.end(); ++it){
         if ((*it).getLogin().compare(login) + (*it).getPassword().compare(password) == 0) {
             sendCmd(CMD_LOGIN_OK, socket);
-            
+
             clients.push_back((*it));
 
-            checkBuffer((*it));
+            //checkBuffer((*it));
 
             return true;
         }

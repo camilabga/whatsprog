@@ -11,8 +11,8 @@
 
 using namespace std;
 
-#define MAX_TIME 1000
-#define TIME_SEND_LOGIN 1000
+#define MAX_TIME 60
+#define TIME_SEND_LOGIN 60
 
 class User{
     private:

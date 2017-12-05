@@ -9,9 +9,7 @@ DWORD WINAPI server_brain(LPVOID lpParameter){
     cout << "Server Online" << endl;
     while (1) {
         server.checkConnectedClients();
-        cout << "esperando" << endl;
         server.waitingActivity();
-        cout << "procura novo user"<< endl;
         server.acceptSocket();
     }
 }
@@ -34,6 +32,7 @@ int main () {
     TerminateThread(tHandle,0);
     CloseHandle(tHandle);
     server_socket.close();
+    WSACleanup();
 
     return 0;
 }
