@@ -39,7 +39,6 @@ class User{
 class Server{
 private:
     list<User> users;
-    list<User> clients;
 
     list<Message> buffer;
 

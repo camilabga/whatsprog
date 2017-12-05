@@ -24,7 +24,7 @@ void Server::checkConnectedClients(){
     connected_sockets.clean();
     if (server_socket.accepting()){
         connected_sockets.include(server_socket);
-        for (list<User>::iterator it=clients.begin(); it != clients.end(); ++it){
+        for (list<User>::iterator it=users.begin(); it != users.end(); ++it){
             if ((*it).getSocket().connected()){
                cout << (*it).getLogin() << " connected" << endl;
                 connected_sockets.include((*it).getSocket());
@@ -83,7 +83,7 @@ bool Server::acceptSocket(){
 
 void Server::waitingActivity(){
     int32_t cmd;
-    for (list<User>::iterator it=clients.begin(); it != clients.end(); ++it){
+    for (list<User>::iterator it=users.begin(); it != users.end(); ++it){
         if ((*it).getSocket().connected() && connected_sockets.had_activity((*it).getSocket())){
             iResult = (*it).getSocket().read_int(cmd, MAX_TIME*1000);
 
@@ -100,7 +100,6 @@ void Server::waitingActivity(){
                     case CMD_LOGOUT_USER:
                         (*it).getSocket().close();
                         cout << (*it).getLogin() << " logout" << endl;
-                        it = clients.erase(it);
                     break;
 
                     default:
@@ -318,7 +317,6 @@ bool Server::newUser(string login, string password, tcp_winsocket &socket){
     }
 
     u.setSocket(socket);
-    clients.push_back(u);
     users.push_back(u);
     cout << "+1 user" << endl;
     sendCmd(CMD_LOGIN_OK, socket);
@@ -328,9 +326,11 @@ bool Server::newUser(string login, string password, tcp_winsocket &socket){
 bool Server::loginUser(string login, string password, tcp_winsocket &socket){
     for (list<User>::iterator it=users.begin(); it != users.end(); ++it){
         if (it->getLogin().compare(login) + it->getPassword().compare(password) == 0) {
-            sendCmd(CMD_LOGIN_OK, socket);
+            it->setSocket(socket);
 
-            clients.push_back((*it));
+            cout << "logou" << endl;
+
+            sendCmd(CMD_LOGIN_OK, socket);
 
             //checkBuffer((*it));
 
