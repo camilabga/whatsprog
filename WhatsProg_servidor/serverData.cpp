@@ -264,16 +264,18 @@ void Server::cmd_new_msg(User &user) {
 
                                         sendCmd(CMD_MSG_RECEBIDA, param1, user.getSocket());
 
-                                        buffer.push_back(message);
-
                                         if((*a).getSocket().connected()){
                                             if (sendCmd(CMD_NOVA_MSG, param1, message.getSender(), param3, (*a).getSocket())) {
                                                 message.setStatus(MSG_ENTREGUE);
+                                                buffer.push_back(message);
                                                 cout << "enviando msg entregue" << endl;
                                                 sendCmd(CMD_MSG_ENTREGUE, param1, user.getSocket());
                                             } else {
+                                                buffer.push_back(message);
                                                 return ;
                                             }
+                                        } else {
+                                            buffer.push_back(message);
                                         }
 
                                     } else {
