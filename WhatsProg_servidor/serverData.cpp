@@ -212,7 +212,11 @@ void Server::checkBuffer(User &user){
             if ((*it).getStatus() == MSG_RECEBIDA) {
                 if (sendCmd(CMD_NOVA_MSG, (*it).getId(), (*it).getSender(), (*it).getText(), user.getSocket())) {
                     it->setStatus(MSG_ENTREGUE);
-                    sendCmd(CMD_MSG_ENTREGUE, it->getId(), (*it).getSender().getSocket());
+                    for (list<User>::iterator u=users.begin(); u != users.end(); ++u) {
+                        if ((*u).getLogin().compare((*it).getSender()) == 0){
+                            sendCmd(CMD_MSG_ENTREGUE, it->getId(), (*u).getSocket());
+                        }
+                    }
                 }
             }
         }
