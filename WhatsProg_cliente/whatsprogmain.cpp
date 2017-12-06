@@ -26,13 +26,27 @@ DWORD WINAPI le_msg(LPVOID lpParameter)
             cerr<<"cmd: "<<cmd<<"  ";
 
             if(cmd==CMD_NOVA_MSG){//1005
-                //if
 
                 int32_t id;
                 string usuario,text;
                 conexaoOK = (s.read_int(id,1000*TIMEOUT_WHATSPROG) == sizeof(id));
                 if(conexaoOK) conexaoOK = (s.read_string(usuario,1000*TIMEOUT_WHATSPROG));
                 if(conexaoOK) conexaoOK = (s.read_string(text,1000*TIMEOUT_WHATSPROG));
+       /*   //Sera que vai?
+                cerr<<"Usuario selecionado: "<<DCliente[DCliente.getIdConversa()].getCorrespondente()<<"\n";
+                if(DCliente[DCliente.getIdConversa()].getCorrespondente()==usuario)
+                    for (unsigned i=0; i<DCliente[DCliente.getIdConversa()].size(); i++)
+                        if (//DCliente[DCliente.getIdConversa()][i].getRemetente() == DCliente[DCliente.getIdConversa()].getCorrespondente() &&
+                            DCliente[DCliente.getIdConversa()][i].getStatus() == MSG_ENTREGUE){
+                            DCliente[DCliente.getIdConversa()][i].setStatus(MSG_LIDA);
+                            if(s.connected()){
+                                if(s.write_int(CMD_MSG_LIDA1) != SOCKET_ERROR)
+                                if(s.write_int(DCliente[DCliente.getIdConversa()][i].getId()) != SOCKET_ERROR)
+                                if(s.write_string(DCliente[DCliente.getIdConversa()][i].getRemetente()) != SOCKET_ERROR)
+                                    cerr<<"ID: "<<s.write_int(DCliente[DCliente.getIdConversa()][i].getId())<<" - LIDA1 pelo destinatario\n";
+                            }
+                        }
+*/
                 cerr<<"\n-------------"
                       "\nDe: \t"<<usuario<<
                       "\nTexto: "<<text<<
