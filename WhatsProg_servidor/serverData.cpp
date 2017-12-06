@@ -211,8 +211,8 @@ void Server::checkBuffer(User &user){
         if ((*it).getReceiver().compare(user.getLogin()) == 0){
             if ((*it).getStatus() == MSG_RECEBIDA) {
                 if (sendCmd(CMD_NOVA_MSG, (*it).getId(), (*it).getSender(), (*it).getText(), user.getSocket())) {
-                    (*it).setStatus(MSG_ENTREGUE);
-                    sendCmd(CMD_MSG_ENTREGUE, (*it).getId(), user.getSocket());
+                    it->setStatus(MSG_ENTREGUE);
+                    sendCmd(CMD_MSG_ENTREGUE, it->getId(), (*it).getSender().getSocket());
                 }
             }
         }
