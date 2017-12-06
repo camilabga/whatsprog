@@ -36,6 +36,8 @@ private slots:
     void on_lineEditMensagem_returnPressed();
     void on_actionNova_conversa_triggered();
 
+    void on_actionRemover_conversa_triggered();
+
 signals:
     void conversasModificada();
     void numMsgConversaModificado(unsigned I);

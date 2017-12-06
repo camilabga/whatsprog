@@ -75,6 +75,7 @@ public:
     inline void clearConversas() {LC.clear();}
     // Gera (incrementa) uma id valida para a proxima msg
     inline int getNovaIdMensagem() {return ++idMensagem;}
+    inline int getIdMensagem(){return idMensagem;}
     // Funcoes de consulta/alteracao dos demais parametros
     // As funcoes de alteracao retornam false em caso de erro, true se OK
     inline int getIdConversa() const {return idConversa;}

@@ -61,7 +61,6 @@ bool DadosCliente::setServidorUsuario(const string &IP, const string &MU)
     meuUsuario = MU;
     return true;
 }
-
 bool DadosCliente::setIdConversa(int ID)
 {
     if (ID >= (int)size())

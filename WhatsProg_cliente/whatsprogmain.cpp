@@ -18,32 +18,70 @@ DWORD WINAPI le_msg(LPVOID lpParameter)
 {
     WhatsProgMain *prov;
     prov = (WhatsProgMain *)lpParameter;
-
-
     int32_t cmd;
     bool conexaoOK=0;
     while (s.connected()){
         conexaoOK = (s.read_int(cmd,1000*TIMEOUT_WHATSPROG) == sizeof(cmd));
-        if(conexaoOK)
-        if(cmd==CMD_NOVA_MSG){
-            int32_t id;
-            string usuario,text;
-            conexaoOK = (s.read_int(id,1000*TIMEOUT_WHATSPROG) == sizeof(id));
-            if(conexaoOK) conexaoOK = (s.read_string(usuario,1000*TIMEOUT_WHATSPROG));
-            if(conexaoOK) conexaoOK = (s.read_string(text,1000*TIMEOUT_WHATSPROG));
-            cerr<<"texto: "<<text<<"\nde: \t"<<usuario<<"\n";
-            Mensagem nova;
-            nova.setRemetente(usuario);
-            nova.setTexto(text);
-            nova.setId(id);
-            DCliente[0].insertMessage(nova);//<<<<<<<<<<<<<<<<<<<GAMBIARRA
-            nova.setStatus(MSG_ENTREGUE);
-            emit prov->conversasModificada();
-            emit prov->mensagensModificada();
-            emit prov->statusModificada();
-            cerr<<"emit\n";
-        }
+        if(conexaoOK){
+            cerr<<"cmd: "<<cmd<<"  ";
 
+            if(cmd==CMD_NOVA_MSG){//1005
+                //if
+
+                int32_t id;
+                string usuario,text;
+                conexaoOK = (s.read_int(id,1000*TIMEOUT_WHATSPROG) == sizeof(id));
+                if(conexaoOK) conexaoOK = (s.read_string(usuario,1000*TIMEOUT_WHATSPROG));
+                if(conexaoOK) conexaoOK = (s.read_string(text,1000*TIMEOUT_WHATSPROG));
+                cerr<<"\n-------------"
+                      "\nDe: \t"<<usuario<<
+                      "\nTexto: "<<text<<
+                      "\nID: "<<id<<
+                      "\n-------------";
+                Mensagem nova;
+                nova.setRemetente(usuario);
+                nova.setTexto(text);
+                nova.setId(id);
+                nova.setStatus(MSG_RECEBIDA);
+                nova.setDestinatario(DCliente.getMeuUsuario());
+
+                bool dest_ok=0;
+                for(int i = 0; i<DCliente.size(); i++){
+                    if(DCliente[i].getCorrespondente()==usuario){
+                        DCliente[i].insertMessage(nova);
+                        dest_ok =1;
+                    }
+                }
+                if (!dest_ok){
+                    DCliente.insertConversa(usuario);
+                    DCliente[DCliente.size()-1].insertMessage(nova);
+                }
+
+                emit prov->conversasModificada();
+                emit prov->mensagensModificada();
+                emit prov->statusModificada();
+            }
+
+            else if((cmd==CMD_MSG_RECEBIDA) || (cmd==CMD_MSG_ENTREGUE) || (cmd==CMD_MSG_LIDA2)){//1006  ||  1007  ||  1009
+                int32_t id;
+                conexaoOK = (s.read_int(id,1000*TIMEOUT_WHATSPROG) == sizeof(id));
+                if(conexaoOK){
+                    for(int32_t conv=0; conv<DCliente.size(); conv++)
+                        for(int32_t mens =0; mens<DCliente[conv].size(); mens++)
+                            if((id==DCliente[conv][mens].getId())){
+                                if(cmd==CMD_MSG_RECEBIDA)
+                                    DCliente[conv][mens].setStatus(MSG_RECEBIDA);
+                                else if(cmd==CMD_MSG_ENTREGUE)
+                                    DCliente[conv][mens].setStatus(MSG_ENTREGUE);
+                                else if(cmd==CMD_MSG_LIDA2)
+                                    DCliente[conv][mens].setStatus(MSG_LIDA);
+                            }
+                    cerr<<"CMD: "<<cmd<<"  ID: "<<id<<"\n";
+                }
+            }
+
+
+        }
     }
 
 
@@ -335,12 +373,18 @@ void WhatsProgMain::on_tableViewConversas_clicked(const QModelIndex &index)
 
         // Muda o status de todas as msgs que foram enviadas para mim de RECEBIDA -> LIDA
         bool houve_leitura = false;
-        for (unsigned i=0; i<DCliente[DCliente.getIdConversa()].size(); i++)
-        {
-            if (DCliente[DCliente.getIdConversa()][i].getRemetente() == DCliente[DCliente.getIdConversa()].getCorrespondente() &&
+        for (unsigned i=0; i<DCliente[DCliente.getIdConversa()].size(); i++){
+            if (/*DCliente[DCliente.getIdConversa()][i].getRemetente() == DCliente[DCliente.getIdConversa()].getCorrespondente() &&*/
                 DCliente[DCliente.getIdConversa()][i].getStatus() == MSG_ENTREGUE)
             {
                 DCliente[DCliente.getIdConversa()][i].setStatus(MSG_LIDA);
+                if(s.connected()){
+                    if(s.write_int(CMD_MSG_LIDA1) != SOCKET_ERROR)
+                    if(s.write_int(DCliente[DCliente.getIdConversa()][i].getId()) != SOCKET_ERROR)
+                    if(s.write_string(DCliente[DCliente.getIdConversa()][i].getRemetente()) != SOCKET_ERROR)
+                        cerr<<"ID: "<<s.write_int(DCliente[DCliente.getIdConversa()][i].getId())<<" - LIDA1 pelo destinatario\n";
+
+                }
                 // Envia msg ao servidor informando que a msg foi lida
 
 
@@ -390,16 +434,6 @@ void WhatsProgMain::on_lineEditMensagem_returnPressed()
     // Estado (status) da mensagem
     M.setStatus(MSG_ENVIADA);
 
-    // Envia a msg M via socket para o servidor
-    /*
-    string txt = ui->lineEditMensagem->text().toStdString();
-    QMessageBox::warning(this, "teste", txt.c_str());
-    string rem = DCliente.getMeuUsuario();
-    QMessageBox::warning(this, "teste", rem.c_str());
-    int32_t id = DCliente.size()+1;
-    QMessageBox::warning(this, "teste", QString::number(id));
-    MsgStatus status = MSG_ENVIADA; //TAVA FALTANDO ATRIBUIR O VALOR DE STATUSSSSSS AAAAAAAAAAAAA
-    cout << "oi1";*/
     emit mensagemClienteServidor(M.getId(), M.getRemetente(), M.getDestinatario(), M.getTexto(), M.getStatus());
     /** COLOQUEI ESSE EMIT AQUI **/
     // Inclui a msg na base de dados local
@@ -419,52 +453,14 @@ void WhatsProgMain::on_actionNova_conversa_triggered()
 }
 
 void WhatsProgMain::slotAceitarDestinatario(const string &dest)
-{/*
-    if(s.connected())
-    {
-        bool conexaoOK = true;
-        if(conexaoOK) conexaoOK = (s.write_int(CMD_CRIAR_CONVERSA) != SOCKET_ERROR);
-        if(conexaoOK) conexaoOK = (s.write_string(dest) != SOCKET_ERROR);
-        int32_t cmd;
-        conexaoOK = (s.read_int(cmd,1000*TIMEOUT_WHATSPROG) == sizeof(cmd)); //TAVA DANDO CONEXÃO INVALIDA PORQUE
-        //s.read_int(cmd,1000*TIMEOUT_WHATSPROG) != sizeof(cmd) ERA FALSO JÁ QUE OS DOIS VALORES RETORNAM 4
-        //ENTÃO TIVE QUE TROCAR != POR == '-'
-        QMessageBox::warning(this, "leu td", QString::number(cmd));
-        if(conexaoOK)
-        {
-            switch(cmd)
-            {
-                case CMD_CRIAR_CONVERSA_OK:*/
-                    DCliente.insertConversa(dest);
-                    emit conversasModificada();/*
-                    return;
-                case CMD_USER_INVALIDO:
-                    QMessageBox::warning(this, "Erro de criação", "Usuário inválido.");
-                    return;
-             }
-        }
-        else
-        {
-            QMessageBox::warning(this, "Erro", "Erro ao coletar resposta do servidor.");
-            return;
-        }
-    }
-
-    /*
-    string txt = ui->lineEditMensagem->text().toStdString();
-    QMessageBox::warning(this, "teste", txt.c_str());
-    string rem = DCliente.getMeuUsuario();
-    QMessageBox::warning(this, "teste", rem.c_str());
-    int32_t id = DCliente.size()+1;
-    QMessageBox::warning(this, "teste", QString::number(id));
-    MsgStatus status = MSG_ENVIADA; //TAVA FALTANDO ATRIBUIR O VALOR DE STATUSSSSSS AAAAAAAAAAAAA
-    cout << "oi1";
-    emit mensagemClienteServidor(id, rem, dest, txt, status);
-    */
+{
+    DCliente.insertConversa(dest);
+    emit conversasModificada();
 }
 
 void WhatsProgMain::slotMensagemClienteServidor(int32_t id, const string &rem, const string &dest, const string &txt, MsgStatus status)
 {
+    emit conversasModificada();
     bool conexaoOK = true;
     if(s.connected())
     {
@@ -472,22 +468,21 @@ void WhatsProgMain::slotMensagemClienteServidor(int32_t id, const string &rem, c
         if(conexaoOK) conexaoOK = (s.write_int(id) != SOCKET_ERROR);
         if(conexaoOK) conexaoOK = (s.write_string(dest) != SOCKET_ERROR);
         if(conexaoOK) conexaoOK = (s.write_string(txt) != SOCKET_ERROR);
-        cout << "oi2";
-        if (!conexaoOK)
-        {
+        if (!conexaoOK)        {
             QMessageBox::warning(this, "Erro de conexão", "Erro no envio da conexão.");
             on_actionDesconectar_triggered();
             return;
-        } else
-        {
-            QMessageBox::warning(this, "FOI", "Enviou td.");
-        }
+        } else        {
+            //QMessageBox::warning(this, "FOI", "Enviou td.");
+        }/*
         conexaoOK = false;
         int32_t cmd;
         conexaoOK = (s.read_int(cmd,1000*TIMEOUT_WHATSPROG) == sizeof(cmd)); //TAVA DANDO CONEXÃO INVALIDA PORQUE
+
         //s.read_int(cmd,1000*TIMEOUT_WHATSPROG) != sizeof(cmd) ERA FALSO JÁ QUE OS DOIS VALORES RETORNAM 4
         //ENTÃO TIVE QUE TROCAR != POR == '-'
-        QMessageBox::warning(this, "leu td", QString::number(cmd));
+        //QMessageBox::warning(this, "RECEBEU DO SERVIDOR", QString::number(cmd));
+
         if(conexaoOK)
         {
             switch(cmd)
@@ -506,20 +501,8 @@ void WhatsProgMain::slotMensagemClienteServidor(int32_t id, const string &rem, c
                     if(s.read_int(cmd,1000*TIMEOUT_WHATSPROG) == sizeof(cmd)) id = cmd;
                     return;
                 case CMD_MSG_RECEBIDA:
-                    QMessageBox::warning(this, "FOI", "recebeu.");
-                    Mensagem m;
-                    m.setId(id);
-                    QMessageBox::warning(this, "mensagem", QString::number(id));
-                    m.setDestinatario(dest);
-                    QMessageBox::warning(this, "mensagem", dest.c_str());
-                    m.setRemetente(rem);
-                    QMessageBox::warning(this, "mensagem", rem.c_str());
-                    m.setStatus(status);
-                    QMessageBox::warning(this, "mensagem", QString::number(status));
-                    m.setTexto(txt);
-                    QMessageBox::warning(this, "mensagem", txt.c_str());
                     emit conversasModificada();
-                    QMessageBox::warning(this, "mensagem", "conexao ok");
+                    //QMessageBox::warning(this, "Erro de envio", "Mensagem inválida.");
                     return;
             }
         }
@@ -528,5 +511,15 @@ void WhatsProgMain::slotMensagemClienteServidor(int32_t id, const string &rem, c
             QMessageBox::warning(this, "Erro", "Erro ao coletar resposta do servidor.");
             return;
         }
+    */
     }
+}
+
+void WhatsProgMain::on_actionRemover_conversa_triggered()
+{
+    //DCliente[DCliente.getIdConversa()].clearMessages();
+    DCliente.eraseConversa(DCliente.getIdConversa());
+    emit conversasModificada();
+    emit mensagensModificada();
+    emit statusModificada();
 }

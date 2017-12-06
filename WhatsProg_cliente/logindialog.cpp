@@ -26,7 +26,7 @@ void LoginDialog::setUsuario(bool NovoUsuario)
     ui->lineEditIpServidor->clear();
     ui->lineEditNomeUsuario->clear();
     ui->lineEditSenhaUsuario->clear();
-    ui->lineEditIpServidor->setText("192.168.0.9");//192.168.0.
+    ui->lineEditIpServidor->setText("192.168.0.21");//192.168.0.
     ui->lineEditNomeUsuario->setText("gabriel");
     ui->lineEditSenhaUsuario->setText("gabriel");
     show();
