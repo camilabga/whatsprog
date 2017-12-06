@@ -1,8 +1,8 @@
 # depslib dependency file v1.0
-1512510588 source:c:\users\camila barbosa\documents\github\dca1202\whatsprog_servidor\serverdata.cpp
+1512543085 source:c:\users\camila barbosa\documents\github\dca1202\whatsprog_servidor\serverdata.cpp
 	"serverData.h"
 
-1512511355 c:\users\camila barbosa\documents\github\dca1202\whatsprog_servidor\serverdata.h
+1512540955 c:\users\camila barbosa\documents\github\dca1202\whatsprog_servidor\serverdata.h
 	<iostream>
 	<string>
 	<vector>
@@ -10,8 +10,9 @@
 	<stdint.h>
 	"whatsprogData.h"
 	"winsocket.h"
+	<fstream>
 
-1512240716 c:\users\camila barbosa\documents\github\dca1202\whatsprog_servidor\whatsprogdata.h
+1512539365 c:\users\camila barbosa\documents\github\dca1202\whatsprog_servidor\whatsprogdata.h
 	<string>
 	<stdint.h>
 
@@ -29,6 +30,6 @@
 	<iostream>
 	"winsocket.h"
 
-1512485797 source:c:\users\camila barbosa\documents\github\dca1202\whatsprog_servidor\whatsprog_server.cpp
+1512540652 source:c:\users\camila barbosa\documents\github\dca1202\whatsprog_servidor\whatsprog_server.cpp
 	"serverData.h"
 

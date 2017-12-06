@@ -25,6 +25,8 @@ int main () {
 
     server.statusThread(tHandle);
 
+    server.inicialize();
+
     while (1) {
 
     }

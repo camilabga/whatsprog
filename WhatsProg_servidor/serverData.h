@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include "whatsprogData.h"
 #include "winsocket.h"
+#include <fstream>
 
 using namespace std;
 
@@ -51,6 +52,12 @@ public:
     void openConnection(WINSOCKET_STATUS iR);
 
     void statusThread(HANDLE tHandle);
+
+    void inicialize();
+
+    ostream &storeUsers();
+    //ostream &storeBuffer(ostream &O);
+    istream &getUsers(istream &I);
 
     bool newUser(string login, string password, tcp_winsocket &socket);
     bool isUserRepeated(User &u);

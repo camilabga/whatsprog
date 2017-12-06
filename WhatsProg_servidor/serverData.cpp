@@ -20,6 +20,44 @@ void Server::statusThread(HANDLE tHandle){
     }
 }
 
+istream& Server::getUsers(istream &I){
+    int n;
+    string head, login, passw;
+    getline(I, head, ' ');
+    I >> n;
+    User U;
+    for(int i=0; i<n;i++){
+        I.ignore(255,'\n');
+        getline(I,login,',');
+        U.setLogin(login);
+        getline(I,passw,';');
+        U.setPassword(passw);
+        users.push_back(U);
+    }
+}
+
+ostream& Server::storeUsers(){
+    string file = "usuarios.txt";
+    ofstream O(file.c_str());
+
+    O << "USUARIOS " << users.size()<<"\n";
+    for(list<User>::iterator i = users.begin(); i!=users.end(); i++){
+        O << i->getLogin() << "," << i->getPassword() << ";\n";
+    }
+}
+
+/*ostream& Server::storeBuffer(ostream &O){
+
+}*/
+
+void Server::inicialize(){
+    string nome = "usuarios.txt";
+    ifstream arq(nome.c_str());
+    if (arq.is_open()){
+        getUsers(arq);
+    }
+}
+
 void Server::checkConnectedClients(){
     connected_sockets.clean();
     if (server_socket.accepting()){
@@ -94,6 +132,7 @@ void Server::waitingActivity(){
                     break;
 
                     case CMD_MSG_LIDA1:
+                        cout << "recebeu cmd lida" << endl;
                         cmd_msg_read1((*it));
                     break;
 
@@ -171,7 +210,7 @@ void Server::checkBuffer(User &user){
     for (list<Message>::iterator it=buffer.begin(); it != buffer.end(); ++it) {
         if ((*it).getReceiver().compare(user.getLogin()) == 0){
             if ((*it).getStatus() == MSG_RECEBIDA) {
-                if (sendCmd(CMD_NOVA_MSG, (*it).getId(), user.getLogin(), (*it).getText(), user.getSocket())) {
+                if (sendCmd(CMD_NOVA_MSG, (*it).getId(), (*it).getSender(), (*it).getText(), user.getSocket())) {
                     (*it).setStatus(MSG_ENTREGUE);
                     sendCmd(CMD_MSG_ENTREGUE, (*it).getId(), user.getSocket());
                 }
@@ -220,6 +259,7 @@ void Server::cmd_new_msg(User &user) {
                             for (list<User>::iterator a=users.begin(); a != users.end(); ++a) {
                                 if ((*a).getLogin().compare(param2) == 0) {
                                     if (message.setText(param3)) {
+                                        cout << "enviou confirmacao recebimento msg" << endl;
                                         message.setStatus(MSG_RECEBIDA);
 
                                         sendCmd(CMD_MSG_RECEBIDA, param1, user.getSocket());
@@ -227,8 +267,9 @@ void Server::cmd_new_msg(User &user) {
                                         buffer.push_back(message);
 
                                         if((*a).getSocket().connected()){
-                                            if (sendCmd(CMD_NOVA_MSG, param1, param2, param3, (*a).getSocket())) {
+                                            if (sendCmd(CMD_NOVA_MSG, param1, message.getSender(), param3, (*a).getSocket())) {
                                                 message.setStatus(MSG_ENTREGUE);
+                                                cout << "enviando msg entregue" << endl;
                                                 sendCmd(CMD_MSG_ENTREGUE, param1, user.getSocket());
                                             } else {
                                                 return ;
@@ -242,7 +283,7 @@ void Server::cmd_new_msg(User &user) {
                                 }
                             }
 
-                            sendCmd(CMD_USER_INVALIDO, param1, user.getSocket());
+                            //sendCmd(CMD_USER_INVALIDO, param1, user.getSocket());
 
                         } else {
                             sendCmd(CMD_USER_INVALIDO, param1, user.getSocket());
@@ -283,6 +324,7 @@ void Server::cmd_msg_read1(User &user){
                         for (list<User>::iterator a=users.begin(); a != users.end(); ++a) {
                             if ((*a).getLogin().compare(param2) == 0){
                                 if((*a).getSocket().connected()){
+                                    cout << "enviou comando de lida" << endl;
                                     sendCmd(CMD_MSG_LIDA2, param1, (*a).getSocket());
                                     buffer.erase(it);
                                     return ;
@@ -318,6 +360,7 @@ bool Server::newUser(string login, string password, tcp_winsocket &socket){
 
     u.setSocket(socket);
     users.push_back(u);
+    storeUsers();
     cout << "+1 user" << endl;
     sendCmd(CMD_LOGIN_OK, socket);
     return true;
@@ -332,7 +375,7 @@ bool Server::loginUser(string login, string password, tcp_winsocket &socket){
 
             sendCmd(CMD_LOGIN_OK, socket);
 
-            //checkBuffer((*it));
+            checkBuffer((*it));
 
             return true;
         }
