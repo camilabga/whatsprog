@@ -4,4 +4,4 @@ Repository for the advanced programming course offered by DCA in the 2017.2 seme
 In this repository, you may find three main projects developed during the course of advanced programming:
 * a cuircuit simulator in C++ and UI in Qt
 * a sodoku solver in C++ and UI in Qt
-* a intranet messenger program in C++ and UI in Qt
+* a intranet messenger program in C++ and UI in Qt (WhatsProg)
